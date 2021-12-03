@@ -311,11 +311,7 @@ class Related_Outfit extends React.Component {
    var scrollRightRelatedStyle = this.state.defaultStyle;
    var scrollLeftOutfitStyle = this.state.defaultStyle;
    var scrollRightOutfitStyle = this.state.defaultStyle;
-   //console.log("scrollLeftRelatedStyle",scrollLeftRelatedStyle);
-   /*console.log(this.state.relatedProducts.length);
-   console.log(this.state.outfits.length );
-   console.log(this.state.scrollLeftRelated);
-   console.log(this.state.scrollLeftOutfit);*/
+
    if(this.state.relatedProducts.length > 4) {
     scrollRightRelatedStyle = {"visibility": "visible"}
    }
@@ -360,7 +356,7 @@ class Related_Outfit extends React.Component {
           <button className="PreviousProd Outfit" style={scrollLeftOutfitStyle}><FontAwesomeIcon icon = {faAngleLeft} onClick={(event)=>this.scroll(event,-250)}/></button>
 
             <div data-testid="Outfit" id="Outfit">
-              <button id="Related_Plus" onClick={()=>this.addToOutfit()}><FontAwesomeIcon icon = {faPlus} id="PlusIcon"/><div>Add to Outfit</div></button>
+              <button id="Related_Plus" className="rel" onClick={()=>this.addToOutfit()}><FontAwesomeIcon icon = {faPlus} id="PlusIcon"/><div>Add to Outfit</div></button>
               {this.state.outfits.map((product) => (
                 <RelatedOutfit_ProductInfo key={product.id} currentProductId={this.state.productId} rating={this.props.rating} product={product} component={'Outfit'} productClick={this.props.productClick} crossButtonClick={this.crossButtonClick}/>
               ))}
