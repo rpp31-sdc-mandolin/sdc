@@ -3,7 +3,7 @@ import RelatedOutfit_ProductInfo from './RelatedOutfit_ProductInfo.jsx';
 import Comparison from './Comparison.jsx';
 import PropTypes from 'prop-types';
 import fetch from './fetchData';
-import React from 'react';
+import React, { Suspense } from 'react';
 import $ from 'jquery';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
