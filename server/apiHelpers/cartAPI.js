@@ -9,7 +9,7 @@ const getProductsFromCart = (callback) => {
     method: 'get',
     headers: {
       'User-Agent': 'request',
-      'Authorization': config.API_KEY
+      'Authorization': config.API_KEY || process.env.API_KEY
     }
   };
 
@@ -24,7 +24,24 @@ const getProductsFromCart = (callback) => {
     })
 };
 
-const addToCart = () => {
+const addToCart = (skuId, callback) => {
+  let options = {
+    url: server,
+    method: 'post',
+    headers: {
+      'User-Agent': 'request',
+      'Authorization': config.API_KEY || process.env.API_KEY
+    },
+    data: {sku_id: skuId}
+  };
+
+  axios(options)
+    .then(response => {
+      callback(null, response.data);
+    })
+    .catch(err => {
+      callback(err);
+    })
 
 };
 

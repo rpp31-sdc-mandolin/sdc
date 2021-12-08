@@ -1,9 +1,11 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheese } from '@fortawesome/free-solid-svg-icons';
 
 const Logo = props => {
   return (
     <div id='Logo'>
-      Logo
+     <FontAwesomeIcon icon={faCheese} /> Bleu Cheese & Co.
     </div>
   );
 };

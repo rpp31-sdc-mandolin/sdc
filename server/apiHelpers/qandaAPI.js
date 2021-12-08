@@ -9,19 +9,18 @@ const getQuestions = (productID, callback) => {
     method: 'get',
     headers: {
       'User-Agent': 'request',
-      'Authorization': config.API_KEY
+      'Authorization': config.API_KEY || process.env.API_KEY
     },
     params: {
       product_id: productID,
       page: 1,
-      count: 5
+      count: 100
     }
   };
 
   axios(options)
     .then((response) => {
       callback(null, response.data);
-      console.log(response)
     })
     .catch((err) => {
       callback(err);
@@ -35,7 +34,7 @@ const getAnswersByID = (questionID, callback) => {
     method: 'get',
     headers: {
       'User-Agent': 'request',
-      'Authorization': config.API_KEY
+      'Authorization': config.API_KEY || process.env.API_KEY
     },
     params: {
       page: 1,
@@ -58,22 +57,106 @@ const postQuestions = (questionData, callback) => {
     method: 'post',
     headers: {
       'User-Agent': 'request',
-      'Authorization': config.API_KEY
-    }
+      'Authorization': config.API_KEY || process.env.API_KEY
+    },
+    data: questionData
   };
 
   axios(options)
     .then((response) => {
+      console.log(response);
       callback(null, response.data);
     })
     .catch((err) => {
+      console.log(err);
       callback(err);
     })
 };
 
 
+const putQuestions = (questionID, callback) => {
+  let options = {
+    url: server + '/' + questionID + '/helpful',
+    method: 'put',
+    headers: {
+      'User-Agent': 'request',
+      'Authorization': config.API_KEY || process.env.API_KEY
+    }
+  };
+
+  axios(options)
+    .then((response) => {
+      callback(null, response.data)
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+}
+
+const putAnswers = (answerID, callback) => {
+  let options = {
+    url: `https://app-hrsei-api.herokuapp.com/api/fec2/hr-rpp/qa/answers/${answerID}/helpful`,
+    method: 'put',
+    headers: {
+      'User-Agent': 'request',
+      'Authorization': config.API_KEY || process.env.API_KEY
+    }
+  }
+
+  axios(options)
+  .then((response) => {
+    callback(null, response.data)
+  })
+  .catch((err) => {
+    console.log(err);
+  })
+}
+
+const reportAnswers = (answerID, callback) => {
+  let options = {
+    url: `https://app-hrsei-api.herokuapp.com/api/fec2/hr-rpp/qa/answers/${answerID}/report`,
+    method: 'put',
+    headers: {
+      'User-Agent': 'request',
+      'Authorization': config.API_KEY || process.env.API_KEY
+    }
+  }
+
+  axios(options)
+  .then((response) => {
+    callback(null, response.data)
+  })
+  .catch((err) => {
+    console.log(err);
+  })
+}
+
+const addAnswer = (answer, questionID, callback) => {
+  let options = {
+    url: server + '/' + questionID + '/answers',
+    method: 'post',
+    headers: {
+      'User-Agent': 'request',
+      'Authorization': config.API_KEY || process.env.API_KEY
+    },
+    data: answer
+  };
+
+  axios(options)
+    .then((response) => {
+      callback(null, response.data)
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+}
+
 module.exports = {
   getQuestions,
   getAnswersByID,
-  postQuestions
+  postQuestions,
+  putQuestions,
+  putAnswers,
+  addAnswer,
+  reportAnswers
 };
