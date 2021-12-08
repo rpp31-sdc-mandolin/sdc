@@ -6,7 +6,8 @@
   "scripts": {
     "start": "nodemon server/index.js",
     "build": "webpack --mode production -w",
-    "test": "jest --coverage"
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
