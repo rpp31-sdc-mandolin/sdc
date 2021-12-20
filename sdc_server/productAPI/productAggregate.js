@@ -17,7 +17,7 @@ async function main() {
     await client.connect();
     // await createDatabase(client, 2)
     // await listDatabases(client);
-    for (var i = 7962; i < 1000011; i++) {
+    for (var i = 1; i < 1000012; i++) {
       await createDatabase(client, i);
     }
 
@@ -31,11 +31,6 @@ async function main() {
 }
 
 main();
-
-async function listDatabases(client) {
-  const databasesList = await client.db().admin().listDatabases();
-  console.log(databasesList);
-}
 
 async function getProducts(client) {
 
@@ -93,15 +88,18 @@ async function createDatabase(client, number) {
       'localField': 'style_id',
       'foreignField': 'styleId',
       'as': 'photos'
-    }},
+    }}
   ]
 
   const test = client.db("sdc_test").collection("products_test").aggregate(pipeline)
 
+  // var stats = await test.explain('executionStats')
+  // console.log(stats)
   await test.forEach(test => {
     console.log(`${test.id}`)
-    client.db("sdc_test").collection("featureAgg").insertOne(test);
+    client.db("sdc_test").collection("document_test").insertOne(test);
   })
+
 }
 
 
