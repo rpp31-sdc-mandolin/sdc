@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon server/index.js",
-    "build": "webpack --mode production -w",
+    "build": "webpack --mode development -w",
     "test": "jest",
     "coverage": "jest --coverage"
   },
@@ -25,6 +25,7 @@
     "jquery-html5-validity": "^1.1.2",
     "jsdom": "^16.7.0",
     "jsdom-global": "^3.0.2",
+    "mongoose": "^6.1.2",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
