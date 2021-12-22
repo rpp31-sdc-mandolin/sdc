@@ -25,7 +25,7 @@ class App extends React.Component {
     this.changeInOutfit = this.changeInOutfit.bind(this);
     this.updateDetailsAndStyles = this.updateDetailsAndStyles.bind(this);
   }
-   /****************************************************************************/
+  /****************************************************************************/
   /** clicking on outfit or raletd product makes that as the current product  **/
   /*****************************************************************************/
   relatedOutfitProductClick(event, productId){

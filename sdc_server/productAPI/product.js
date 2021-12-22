@@ -1,6 +1,5 @@
 const { MongoClient } = require('mongodb');
 
-
 async function getAllProducts() {
   const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
 
@@ -8,8 +7,52 @@ async function getAllProducts() {
     await client.connect(() => {
       console.log('CONNECTED')
     })
+    const result = await aggAllProducts(client);
+    callback(null, result);
+  } catch (e) {
+    console.log('ERROR', e)
+    callback(e, null);
+  } finally {
+    await client.close(() => {
+      console.log('ENDING')
+    });
+  }
 
-    await getProducts(client);
+}
+
+async function getProduct(target, callback) {
+  target = Number(target)
+  const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
+
+  try {
+    await client.connect(() => {
+      console.log('CONNECTED')
+    })
+
+    const result = await aggGetProduct(client, target);
+    callback(null, result)
+
+  } catch (e) {
+    console.log('ERROR', e)
+    callback(e, null);
+  } finally {
+
+    await client.close(() => {
+      console.log('ENDING')
+    });
+  }
+}
+
+
+async function getProductStyle() {
+  const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
+
+  try {
+    await client.connect(() => {
+      console.log('CONNECTED')
+    })
+
+    await aggGetProductStyle(client);
 
   } catch (e) {
     console.log('ERROR', e)
@@ -19,18 +62,25 @@ async function getAllProducts() {
       console.log('ENDING')
     });
   }
-
 }
 
-getAllProducts();
 
-async function getProducts (client) {
+async function aggAllProducts (client, id) {
   const cursor = client.db("sdc_test").collection("document_test").find({}).sort({id: 1}).limit(5)
 
   const result = await cursor.toArray()
 
   console.log (result);
   return result;
+}
+
+async function aggGetProduct (client, target) {
+  console.log('TARGET', typeof target, target)
+  const cursor = client.db("sdc_test").collection("document_test").find({id: target})
+
+  const result = await cursor.toArray()
+  // console.log (typeof result[0], result[0])
+  return result[0]
 }
 
 // async function createDatabase(client, number) {
@@ -152,3 +202,8 @@ async function getProducts (client) {
 //       callback(err);
 //     })
 // };
+
+module.exports = {
+  getAllProudcts: getAllProducts,
+  getProduct: getProduct
+}

@@ -1,3 +1,4 @@
+const products2 = require('../sdc_server/productAPI/product.js');
 const products = require('./apiHelpers/productsAPI.js');
 const cart = require('./apiHelpers/cartAPI.js');
 const qanda = require('./apiHelpers/qandaAPI.js');
@@ -11,7 +12,7 @@ module.exports = {
   // PRODUCT CONTROLLERS
   products: {
     getAllProducts: function(req, res) {
-      products.getAllProducts((err, data) => {
+      products2.getAllProducts((err, data) => {
         if (err) {
           res.status(404).send();
           return;
@@ -22,11 +23,12 @@ module.exports = {
       });
     },
     getProductByID: function(req, res) {
-      products.getProduct(req.params.product_id, (err, data) => {
+      products2.getProduct(req.params.product_id, (err, data) => {
         if (err) {
           res.status(404).send();
           return;
         }
+        console.log('DATA in PRODUCT ID', data)
 
         res.status(200).send(data);
       });
