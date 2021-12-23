@@ -1,6 +1,8 @@
 const { MongoClient } = require('mongodb');
+// const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
+// client.connect()
 
-async function getAllProducts() {
+async function getAllProducts(callback) {
   const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
 
   try {
@@ -28,15 +30,12 @@ async function getProduct(target, callback) {
     await client.connect(() => {
       console.log('CONNECTED')
     })
-
     const result = await aggGetProduct(client, target);
     callback(null, result)
-
   } catch (e) {
     console.log('ERROR', e)
     callback(e, null);
   } finally {
-
     await client.close(() => {
       console.log('ENDING')
     });
@@ -67,19 +66,15 @@ async function getProductStyle() {
 
 async function aggAllProducts (client, id) {
   const cursor = client.db("sdc_test").collection("document_test").find({}).sort({id: 1}).limit(5)
-
   const result = await cursor.toArray()
 
-  console.log (result);
   return result;
 }
 
 async function aggGetProduct (client, target) {
-  console.log('TARGET', typeof target, target)
   const cursor = client.db("sdc_test").collection("document_test").find({id: target})
-
   const result = await cursor.toArray()
-  // console.log (typeof result[0], result[0])
+
   return result[0]
 }
 

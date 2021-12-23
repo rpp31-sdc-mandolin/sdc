@@ -28,7 +28,6 @@ module.exports = {
           res.status(404).send();
           return;
         }
-        console.log('DATA in PRODUCT ID', data)
 
         res.status(200).send(data);
       });
