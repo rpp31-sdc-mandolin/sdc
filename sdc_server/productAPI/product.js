@@ -43,20 +43,21 @@ async function getProduct(target, callback) {
 }
 
 
-async function getProductStyle() {
+async function getProductStyle(target, callback) {
+  target = Number(target)
   const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
 
   try {
     await client.connect(() => {
       console.log('CONNECTED')
     })
-
-    await aggGetProductStyle(client);
-
+    const result = await aggGetProductStyle(client, target);
+    console.log('RESULT in style', result)
+    callback(null, finalResult(result))
   } catch (e) {
     console.log('ERROR', e)
+    callback(e, null)
   } finally {
-
     await client.close(() => {
       console.log('ENDING')
     });
@@ -78,127 +79,59 @@ async function aggGetProduct (client, target) {
   return result[0]
 }
 
-// async function createDatabase(client, number) {
+async function aggGetProductStyle (client, target) {
 
-//   const pipeline = [
-//     { '$match': {
-//       'id': number
-//     } },
-//     {'$lookup': {
-//       'from': 'features',
-//       'localField': 'id',
-//       'foreignField': 'product_id',
-//       'as': 'features'
-//     }},
-//     {'$lookup': {
-//       'from': 'styles',
-//       'localField': 'id',
-//       'foreignField': 'productId',
-//       'as': 'styles'
-//     }},
-//     {'$addFields': {
-//       'style_id': '$styles.id',
-//       'product_id': '$id'
-//       }
-//     },
-//     {'$lookup': {
-//       'from': 'skus',
-//       'localField': 'style_id',
-//       'foreignField': 'styleId',
-//       'as': 'skus'
-//     }},
-//     {'$lookup': {
-//       'from': 'photos',
-//       'localField': 'style_id',
-//       'foreignField': 'styleId',
-//       'as': 'photos'
-//     }}
-//   ]
+  const cursor = client.db("sdc_test").collection("document_test").find({id: target})
+  const search = await cursor.toArray()
+  const product = search[0]
 
-//   const test = client.db("sdc_test").collection("document_test").find({}).limit(5)
+  return product
 
-//   // var stats = await test.explain('executionStats')
-//   // console.log(stats)
-//   await test.forEach(test => {
-//     console.log(`${test.id}`)
-//     client.db("sdc_test").collection("document_test").insertOne(test);
-//   })
+}
 
-// }
+const filterSkus = (array, target) => {
+  var filterSkusResult = {};
+  for (let i = 0; i < array.length; i++) {
+    if (array[i].styleId === target) {
+      filterSkusResult[array[i].id] = {size: array[i].size, quantity: array[i].quantity}
+    }
+  }
+  return filterSkusResult;
+}
+
+const filterSalePrice = (string) => {
+  if (string === 'null') {
+    return null
+  }
+  return string
+}
 
 
+const finalResult = (product) => {
+  var result = [];
+  for (var i = 0; i < product.styles.length; i++) {
+    result.push({
+      'style_id': product.styles[i].id,
+      'name': product.styles[i].name,
+      'original_price': product.styles[i].original_price,
+      'sale_price': filterSalePrice(product.styles[i].sale_price),
+      'default?': product.styles[i].default_style === 1,
+      'photos': product.photos,
+      'skus': filterSkus(product.skus, product.styles[i].id)
+    })
+  }
 
+  console.log('styles result:', result)
 
+  return ({
+    'product_id': product.id.toString(),
+    'results': result
+  })
+}
 
-// Inherited Code
-// const axios = require('axios');
-// const config = require('../../config.js');
-
-// const server = 'https://app-hrsei-api.herokuapp.com/api/fec2/hr-rpp/products/'
-
-// const getAllProducts = (callback) => {
-//   let options = {
-//     url: server,
-//     method: 'get',
-//     headers: {
-//       'User-Agent': 'request',
-//       'Authorization': config.API_KEY || process.env.API_KEY
-//     },
-//     params: {
-//       page: 1,
-//       count: 5
-//     }
-//   }
-
-//   axios(options)
-//     .then((response) => {
-//       callback(null, response.data);
-//     })
-//     .catch((err) => {
-//       callback(err);
-//     })
-// };
-
-// const getProduct = (productID, callback) => {
-//   let options = {
-//     url: server + productID,
-//     method: 'get',
-//     headers: {
-//       'User-Agent': 'request',
-//       'Authorization': config.API_KEY || process.env.API_KEY
-//     },
-//   }
-
-//   axios(options)
-//     .then((response) => {
-//       callback(null, response.data);
-//     })
-//     .catch((err) => {
-//       callback(err);
-//     })
-// };
-
-// const getProductStyle = (productID, callback) => {
-//   let options = {
-//     url: server + productID + '/styles',
-//     method: 'get',
-//     headers: {
-//       'User-Agent': 'request',
-//       'Authorization': config.API_KEY || process.env.API_KEY
-//     }
-//   };
-
-//   axios(options)
-//     .then((response) => {
-//       callback(null, response.data);
-//     })
-//     .catch((err) => {
-//       console.log('RESPONSE ERR:', err)
-//       callback(err);
-//     })
-// };
 
 module.exports = {
   getAllProudcts: getAllProducts,
-  getProduct: getProduct
+  getProduct: getProduct,
+  getProductStyle: getProductStyle
 }

@@ -34,11 +34,12 @@ module.exports = {
     },
     getProductStyleByID: function(req, res) {
       let productID = req.params.product_id;
-      products.getProductStyle(productID, (err, data) => {
+      products2.getProductStyle(productID, (err, data) => {
         if (err) {
           res.status(404).send();
           return;
         }
+        console.log('data', data)
 
         res.status(200).send(data);
       });
