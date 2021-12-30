@@ -28,6 +28,7 @@ class QandA extends React.Component {
   getQuestions() {
     axios.get(`/qa/questions/?product_id=${this.props.productId}`)
       .then(response => {
+
         this.setState({
           questions: response.data.results.sort((a, b) => b.question_helpfulness - a.question_helpfulness),
           filteredQuestions: response.data.results.sort((a, b) => b.question_helpfulness - a.question_helpfulness)

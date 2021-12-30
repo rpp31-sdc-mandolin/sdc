@@ -1,7 +1,8 @@
 
 
 const mongoose = require('mongoose');
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+
+//const AutoIncrement = require('mongoose-sequence')(mongoose);
 mongoose.connect('mongodb://localhost:27017/qanda9');
 
 //console.log(process.memoryUsage());
@@ -35,7 +36,7 @@ let questionSchema = new mongoose.Schema({
   asker_name:String,
   asker_email:String,
   reported:Boolean,
-  helpfulness:Number
+  question_helpfulness:Number
 
 },
 {collection: 'Question'}
