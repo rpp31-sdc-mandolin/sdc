@@ -39,6 +39,7 @@
     "@babel/core": "^7.15.8",
     "@babel/preset-env": "7.15.8",
     "@babel/preset-react": "^7.14.5",
+    "@shelf/jest-mongodb": "^2.2.0",
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^12.1.2",
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.5",

@@ -1,7 +1,7 @@
 module.exports = {
   verbose: true,
   testURL: "http://localhost/",
-  testEnvironment: 'jsdom',
+  testEnvironment: 'node',
   setupFilesAfterEnv: [
     "<rootDir>setupTests.js"
   ]

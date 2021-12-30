@@ -52,7 +52,6 @@ async function getProductStyle(target, callback) {
       console.log('CONNECTED')
     })
     const result = await aggGetProductStyle(client, target);
-    console.log('RESULT in style', result)
     callback(null, finalResult(result))
   } catch (e) {
     console.log('ERROR', e)
@@ -121,8 +120,6 @@ const finalResult = (product) => {
     })
   }
 
-  console.log('styles result:', result)
-
   return ({
     'product_id': product.id.toString(),
     'results': result
@@ -131,7 +128,7 @@ const finalResult = (product) => {
 
 
 module.exports = {
-  getAllProudcts: getAllProducts,
+  getAllProducts: getAllProducts,
   getProduct: getProduct,
   getProductStyle: getProductStyle
 }

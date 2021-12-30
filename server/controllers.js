@@ -39,8 +39,6 @@ module.exports = {
           res.status(404).send();
           return;
         }
-        console.log('data', data)
-
         res.status(200).send(data);
       });
     },
@@ -61,8 +59,8 @@ module.exports = {
 
       let relatedProducts = JSON.parse(req.query.productIds);
       let fetchFunctions = [];
-      var promisedFetchProduct = Promise.promisify(products.getProduct);
-      var promisedFetchStyles = Promise.promisify(products.getProductStyle);
+      var promisedFetchProduct = Promise.promisify(products2.getProduct);
+      var promisedFetchStyles = Promise.promisify(products2.getProductStyle);
       var promisedFetchReviews = Promise.promisify(reviews.getReviews);
       for(var product of relatedProducts) {
         fetchFunctions.push(promisedFetchProduct(product));
