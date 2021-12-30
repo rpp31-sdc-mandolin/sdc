@@ -52,6 +52,7 @@ async function getProductStyle(target, callback) {
       console.log('CONNECTED')
     })
     const result = await aggGetProductStyle(client, target);
+    console.log('RESULT', result)
     callback(null, finalResult(result))
   } catch (e) {
     console.log('ERROR', e)
@@ -92,7 +93,7 @@ const filterSkus = (array, target) => {
   var filterSkusResult = {};
   for (let i = 0; i < array.length; i++) {
     if (array[i].styleId === target) {
-      filterSkusResult[array[i].id] = {size: array[i].size, quantity: array[i].quantity}
+      filterSkusResult[array[i].id] = {size: array[i].size.toString(), quantity: array[i].quantity}
     }
   }
   return filterSkusResult;
