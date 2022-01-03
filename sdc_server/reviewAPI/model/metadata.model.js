@@ -11,7 +11,6 @@ module.exports = {
       console.error(`Unable to establish a collection handle in reviews: ${e}`)
     }
   },
-  getMetaReviews: () => {
-
+  getMetadata: () => {
   }
 }
