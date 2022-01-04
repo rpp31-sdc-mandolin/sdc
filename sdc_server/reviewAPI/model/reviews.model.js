@@ -1,49 +1,56 @@
 let reviews;
 
-module.exports = {
-  injectCollection: async (db) => {
+module.exports = class ReviewModel {
+  static async injectDB(client) {
     if (reviews) {
-      return
+      return;
     }
     try {
-      reviews = await db.collection('reviews');
+      reviews = await client.db('reviewService').collection('reviews');
     } catch(e) {
-      console.error(`Unable to establish a collection handle in reviews: ${e}`)
+      console.error(`Unable to establish a collection handle in reviewService: ${e}`)
     }
-  },
-  getReviews: async (
-    page = 0,
-    count = 5,
-    sort,
-    product_id,
-  ) => {
-    let query;
+  }
+
+  static async getReviews(page = 0, count = 5, sort, product_id) {
+    let pipeline = [{ $match: { 'product_id': product_id }}]
     if (sort) {
       switch (sort) {
         case 'newest':
-          query = {}
+          pipeline.push({ '$sort': { 'date': -1 } })
           break;
         case 'helpful':
-          query = {}
+          pipeline.push({ '$sort': { 'helpfulness': -1 } })
           break;
         case 'relevant':
-          query = {}
+          pipeline.push({ '$sort': { 'helpfulness': -1, 'date': -1 } })
           break;
-        default:
-          query = {}
       }
+    } else {
+      pipeline.push({ '$sort': { 'helpfulness': -1, 'date': -1 }})
     }
 
+    let aggCursor;
     try {
-      await reviews.aggregate(query)
+      aggCursor = await reviews.aggregate(pipeline)
     } catch (e) {
-      console.error(e)
+      console.error(`Uhhh, unable to proceed aggregation, ${e}`)
+      return { results: [] }
     }
-  },
-  createReview: () => {
-  },
-  updateHelpful: () => {
-  },
-  updateReport: () => {
+
+    const displayCursor = aggCursor.limit(count).skip(count * page)
+    try {
+      const reviewList = await displayCursor.toArray();
+      return reviewList;
+    } catch (e) {
+      console.error(`Uhhh, unable to convert cursor to array, ${e}`)
+      return { results: [] }
+    }
   }
+  // async createReview() {
+  // }
+  // async updateHelpful() {
+  // }
+  // async updateReport() {
+  // }
 }

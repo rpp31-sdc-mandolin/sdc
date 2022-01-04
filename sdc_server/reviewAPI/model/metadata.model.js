@@ -1,7 +1,7 @@
 let metadata;
 
 module.exports = {
-  injectCollection: async (db) => {
+  injectDB: async (db) => {
     if (metadata) {
       return
     }
