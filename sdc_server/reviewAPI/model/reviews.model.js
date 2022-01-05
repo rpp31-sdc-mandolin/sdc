@@ -1,7 +1,7 @@
 let reviews;
 
-module.exports = class ReviewModel {
-  static async injectDB(client) {
+module.exports = {
+  injectDB: async (client) => {
     if (reviews) {
       return;
     }
@@ -10,9 +10,8 @@ module.exports = class ReviewModel {
     } catch(e) {
       console.error(`Unable to establish a collection handle in reviewService: ${e}`)
     }
-  }
-
-  static async getReviews(page = 0, count = 5, sort, product_id) {
+  },
+  getReviews: async (page = 0, count = 5, sort, product_id) => {
     let pipeline = [{ $match: { 'product_id': product_id }}]
     if (sort) {
       switch (sort) {
@@ -46,11 +45,11 @@ module.exports = class ReviewModel {
       console.error(`Uhhh, unable to convert cursor to array, ${e}`)
       return { results: [] }
     }
+  },
+  createReview: async () => {
+  },
+  updateHelpful: () => {
+  },
+  updateReport: () => {
   }
-  // async createReview() {
-  // }
-  // async updateHelpful() {
-  // }
-  // async updateReport() {
-  // }
 }
