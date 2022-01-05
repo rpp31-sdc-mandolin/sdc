@@ -4,20 +4,24 @@ const { MongoClient } = require('mongodb');
 
 async function getAllProducts(callback) {
   const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
+  // connection pool
 
   try {
-    await client.connect(() => {
-      console.log('CONNECTED')
-    })
+    // await client.connect(() => {
+    //   console.log('CONNECTED')
+    // })
+    await client.connect();
     const result = await aggAllProducts(client);
+    console.log('All products result', result)
     callback(null, result);
   } catch (e) {
     console.log('ERROR', e)
     callback(e, null);
   } finally {
-    await client.close(() => {
-      console.log('ENDING')
-    });
+    // await client.close(() => {
+    //   console.log('ENDING')
+    // });
+    await client.close();
   }
 
 }
@@ -27,18 +31,21 @@ async function getProduct(target, callback) {
   const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
 
   try {
-    await client.connect(() => {
-      console.log('CONNECTED')
-    })
+    // await client.connect(() => {
+    //   console.log('CONNECTED')
+    // })
+    await client.connect();
     const result = await aggGetProduct(client, target);
+    console.log('product result', result)
     callback(null, result)
   } catch (e) {
     console.log('ERROR', e)
     callback(e, null);
   } finally {
-    await client.close(() => {
-      console.log('ENDING')
-    });
+    // await client.close(() => {
+    //   console.log('ENDING')
+    // });
+    await client.close();
   }
 }
 
@@ -48,40 +55,70 @@ async function getProductStyle(target, callback) {
   const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
 
   try {
-    await client.connect(() => {
-      console.log('CONNECTED')
-    })
+    // await client.connect(() => {
+    //   console.log('CONNECTED')
+    // })
+    await client.connect();
     const result = await aggGetProductStyle(client, target);
-    console.log('RESULT', result)
     callback(null, finalResult(result))
   } catch (e) {
     console.log('ERROR', e)
     callback(e, null)
   } finally {
-    await client.close(() => {
-      console.log('ENDING')
-    });
+    // await client.close(() => {
+    //   console.log('ENDING')
+    // });
+    await client.close();
   }
 }
+
+// getAllProducts()
 
 
 async function aggAllProducts (client, id) {
   const cursor = client.db("sdc_test").collection("document_test").find({}).sort({id: 1}).limit(5)
-  const result = await cursor.toArray()
+  // var stats = await cursor.explain('executionStats')
+  // console.log('getAllProducts stats', stats)
+  const dbResult = await cursor.toArray()
+  const result = [];
+
+  for (let i = 0; i < dbResult.length; i++) {
+    result.push({
+      'id': dbResult[i].id,
+      'name': dbResult[i].name,
+      'slogan': dbResult[i].slogan,
+      'description': dbResult[i].description,
+      'category': dbResult[i].category,
+      'default_price': dbResult[i].default_price.toString(),
+    })
+  }
 
   return result;
 }
 
 async function aggGetProduct (client, target) {
   const cursor = client.db("sdc_test").collection("document_test").find({id: target})
+  // var stats = await cursor.explain('executionStats')
+  // console.log('getProduct stats', stats)
   const result = await cursor.toArray()
 
-  return result[0]
+
+  return ({
+    'id': result[0].id,
+    'name': result[0].name,
+    'slogan': result[0].slogan,
+    'description': result[0].description,
+    'category': result[0].category,
+    'default_price': result[0].default_price.toString(),
+    'features': result[0].features
+  })
 }
 
 async function aggGetProductStyle (client, target) {
 
   const cursor = client.db("sdc_test").collection("document_test").find({id: target})
+  // var stats = await cursor.explain('executionStats')
+  // console.log('stats', stats)
   const search = await cursor.toArray()
   const product = search[0]
 
