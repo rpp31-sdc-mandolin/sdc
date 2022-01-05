@@ -12,7 +12,6 @@ async function getAllProducts(callback) {
     // })
     await client.connect();
     const result = await aggAllProducts(client);
-    console.log('All products result', result)
     callback(null, result);
   } catch (e) {
     console.log('ERROR', e)
@@ -36,7 +35,6 @@ async function getProduct(target, callback) {
     // })
     await client.connect();
     const result = await aggGetProduct(client, target);
-    console.log('product result', result)
     callback(null, result)
   } catch (e) {
     console.log('ERROR', e)
@@ -101,6 +99,8 @@ async function aggGetProduct (client, target) {
   // var stats = await cursor.explain('executionStats')
   // console.log('getProduct stats', stats)
   const result = await cursor.toArray()
+
+  // return result[0]
 
 
   return ({
