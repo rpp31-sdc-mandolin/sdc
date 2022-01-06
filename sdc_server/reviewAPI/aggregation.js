@@ -7,8 +7,8 @@ async function main() {
   try {
     await client.connect();
     console.log('Connected successfully to server');
-    await listDatabases(client);
-    await transformReviewModel(client);
+    // await listDatabases(client);
+    // await transformReviewModel(client);
     for (var i = 1; i <= 5774952; i++) {
       await transformCharacteristicModel(client, i);
     }
@@ -67,8 +67,7 @@ async function transformCharacteristicModel(client, id) {
                   '$project': {
                     '_id': 0,
                     'id': 0,
-                    'review_id': 0,
-                    'characteristic_id': 0
+                    'review_id': 0
                   }
                 }
               ],
@@ -114,8 +113,9 @@ async function transformCharacteristicModel(client, id) {
         'recommended': {
           '$first': '$recommend'
         },
-        'characteristic': {
+        'characteristics': {
           '$push': {
+            'id': '$charsReview.characteristic_id',
             'name': '$name',
             'value': '$charsReview.value'
           }
@@ -125,7 +125,7 @@ async function transformCharacteristicModel(client, id) {
       '$merge': {
         'into': {
           'db': 'reviewService',
-          'coll': 'dataOnReview'
+          'coll': 'metadata'
         }
       }
     }
