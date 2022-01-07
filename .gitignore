@@ -5,3 +5,4 @@ config.js
 client/dist/bundle.js
 AWS
 coverage
+newrelic
