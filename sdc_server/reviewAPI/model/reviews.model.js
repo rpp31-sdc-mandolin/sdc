@@ -1,3 +1,4 @@
+const MetaModel = require('./metadata.model.js');
 let reviews;
 
 module.exports = {
@@ -46,7 +47,16 @@ module.exports = {
       return { results: [] }
     }
   },
-  createReview: async () => {
+  createReview: async (part1, part2) => {
+    try {
+      const cursorA = await reviews.insertOne(part1)
+      part2['_id'] = cursorA.insertedId;
+
+      return await MetaModel.addMetadata(part2)
+    } catch (e) {
+      console.error(`Uhhh, unable to post review ${e}`)
+      return { 'error': e }
+    }
   },
   updateHelpful: () => {
   },
