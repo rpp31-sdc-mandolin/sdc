@@ -1,4 +1,5 @@
 const ReviewModel = require('../model/reviews.model.js')
+const MetaModel = require('../model/metadata.model.js')
 
 module.exports = {
   apiGetReviews: async (req, res) => {
@@ -43,16 +44,21 @@ module.exports = {
       rating: review.rating,
       recommend: review.recommend
     }
+
     for (let key in review.characteristics) {
-      part2.characteristics.push({'id': Number(key), 'value': review.characteristics[key]})
+      // find the characteristic's name of the key
+      const found = await MetaModel.getCharsName(Number(key))
+
+      part2.characteristics.push({'id': Number(key), 'name': found, 'value': review.characteristics[key]})
     }
 
-    try {
-      const result = await ReviewModel.createReview(part1, part2)
-      res.status(201).json({'success': result})
-    } catch (e) {
-      res.status(500).json({'error': e.message })
-    }
+
+    // try {
+    //   const result = await ReviewModel.createReview(part1, part2)
+    //   res.status(201).json({'success': result})
+    // } catch (e) {
+    //   res.status(500).json({'error': e.message })
+    // }
 
   },
   apiUpdateHelpful: async (req, res) => {

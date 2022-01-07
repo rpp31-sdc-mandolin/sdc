@@ -1,4 +1,5 @@
 let metadata;
+let characteristics;
 
 module.exports = {
   injectDB: async (client) => {
@@ -7,6 +8,7 @@ module.exports = {
     }
     try {
       metadata = await client.db('reviewService').collection('metadata');
+      characteristics = await client.db('reviewService').collection('characteristics')
     } catch(e) {
       console.error(`Unable to establish a collection handle in metadata: ${e}`)
     }
@@ -28,6 +30,14 @@ module.exports = {
       return cursor;
     } catch (e) {
       console.error(`Uhhh, unalbe to insert to database ${e}`)
+    }
+  },
+  getCharsName: async (id) => {
+    try {
+      const cursor = await characteristics.findOne({ 'id': id }, { 'projection': { _id: 0, name: 1 }})
+      return cursor.name;
+    } catch (e) {
+      console.error(`Uhhh, no characteristic ID found with the id ${e}`)
     }
   }
 }
