@@ -10,7 +10,7 @@ async function main() {
     // await listDatabases(client);
     // await transformReviewModel(client);
     for (var i = 1; i <= 5774952; i++) {
-      await transformCharacteristicModel(client, i);
+      await transformMetadataModel(client, i);
     }
   } catch(error) {
     console.log(error);
@@ -134,7 +134,80 @@ async function transformCharacteristicModel(client, id) {
   const aggCursor = client.db('raw-review').collection('reviews').aggregate(pipeline)
   await aggCursor.forEach(doc => console.log(`${doc._id}`));
 }
+async function transformMetadataModel(client, id) {
 
+  const pipeline = [
+    {
+      '$match': {
+        '_id': id
+      }
+    }, {
+      '$unwind': {
+        'path': '$characteristics'
+      }
+    }, {
+      '$addFields': {
+        'char_id': '$characteristics.id'
+      }
+    }, {
+      '$project': {
+        'characteristics.id': 0
+      }
+    }, {
+      '$addFields': {
+        'characteristics': {
+          '$concatArrays': [
+            [
+              {
+                'k': {
+                  '$toString': '$char_id'
+                },
+                'v': '$characteristics'
+              }
+            ]
+          ]
+        }
+      }
+    }, {
+      '$addFields': {
+        'characteristics': {
+          '$arrayToObject': '$characteristics'
+        }
+      }
+    }, {
+      '$project': {
+        'char_id': 0
+      }
+    }, {
+      '$group': {
+        '_id': '$_id',
+        'product_id': {
+          '$first': '$product_id'
+        },
+        'rating': {
+          '$first': '$rating'
+        },
+        'recommended': {
+          '$first': '$recommended'
+        },
+        'characteristics': {
+          '$mergeObjects': '$characteristics'
+        }
+      }
+    }, {
+        '$merge': {
+          'into': {
+            'db': 'reviewService',
+            'coll': 'metadataV2'
+          }
+        }
+      }
+  ]
+
+
+  const aggCursor = client.db('reviewService').collection('metadata').aggregate(pipeline)
+  await aggCursor.forEach(doc => console.log(`${doc._id}`));
+}
 
 
 
