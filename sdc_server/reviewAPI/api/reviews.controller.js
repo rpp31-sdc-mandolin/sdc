@@ -32,10 +32,13 @@ module.exports = {
       recommend: review.recommend,
       reported: false,
       response: null,
+      review_id: 0,
       reviewer_email: review.email,
       reviewer_name: review.name,
       summary: review.summary
     }
+    // grab last inserted document's review_id
+    // set review_id property with found review id
     review.photos.forEach(url => part1.photos.push({'url': url}) )
 
     const part2 = {
@@ -46,25 +49,34 @@ module.exports = {
     }
 
     for (let key in review.characteristics) {
-      // find the characteristic's name of the key
       const found = await MetaModel.getCharsName(Number(key))
-
       part2.characteristics.push({'id': Number(key), 'name': found, 'value': review.characteristics[key]})
     }
 
-
-    // try {
-    //   const result = await ReviewModel.createReview(part1, part2)
-    //   res.status(201).json({'success': result})
-    // } catch (e) {
-    //   res.status(500).json({'error': e.message })
-    // }
+    try {
+      const result = await ReviewModel.createReview(part1, part2)
+      res.status(201).json({'success': result})
+    } catch (e) {
+      res.status(500).json({'error': e.message })
+    }
 
   },
   apiUpdateHelpful: async (req, res) => {
-    // send response with status 204 no content
+    const { id } = req.params;
+    try {
+      const result = await ReviewModel.updateHelpful(Number(id))
+      res.json({ status: 'Updated' })
+    } catch (e) {
+      res.status(500).json({ 'error': e.message })
+    }
   },
   apiUpdateReport: async (req, res) => {
-   // send response with status 204 no content
+    const { id } = req.params;
+    try {
+      const response = await ReviewModel.updateReport(Number(id))
+      res.json({ status: 'Reported' })
+    } catch (e) {
+      res.status(500).json({ 'error': e.message })
+    }
   }
 }

@@ -1,4 +1,6 @@
 const MetaModel = require('./metadata.model.js');
+const mongodb = require('mongodb')
+const { ObjectId } = mongodb;
 let reviews;
 
 module.exports = {
@@ -51,15 +53,28 @@ module.exports = {
     try {
       const cursorA = await reviews.insertOne(part1)
       part2['_id'] = cursorA.insertedId;
-
       return await MetaModel.addMetadata(part2)
     } catch (e) {
       console.error(`Uhhh, unable to post review ${e}`)
       return { 'error': e }
     }
   },
-  updateHelpful: () => {
+  updateHelpful: async (id) => {
+    try {
+      const cursor = await reviews.updateOne({ 'review_id': id }, { $inc: { 'helpfulness': 1 } })
+      return updateResponse;
+    } catch (e) {
+      console.error(`Uhhh, unable to increment helpfulness count ${e}`)
+      return { 'error': e }
+    }
   },
-  updateReport: () => {
+  updateReport: async (id) => {
+    try {
+      const updateResponse = await reviews.updateOne({ 'review_id': id }, { $set: { 'reported': true } })
+      return updateResponse;
+    } catch (e) {
+      console.error(`Uhhh, unable to report the review ${e}`)
+      return { 'error': e }
+    }
   }
 }
