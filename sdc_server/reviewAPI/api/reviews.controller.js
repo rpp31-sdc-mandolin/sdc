@@ -9,7 +9,7 @@ module.exports = {
     const product_id = Number(req.query.product_id);
 
     try {
-      const  reviewList  = await ReviewModel.getReviews(page, count, sort, product_id)
+      const reviewList = await ReviewModel.getReviews(page, count, sort, product_id)
       let response = {
         product: product_id,
         page: page,
@@ -37,17 +37,18 @@ module.exports = {
       reviewer_name: review.name,
       summary: review.summary
     }
-    // grab last inserted document's review_id
-    // set review_id property with found review id
+    const newReviewId = await ReviewModel.getLastInsertedDoc() + 1;
+    part1.review_id = newReviewId;
     review.photos.forEach(url => part1.photos.push({'url': url}) )
 
     const part2 = {
+      _id: 0,
       characteristics: [],
       product_id: review.product_id,
       rating: review.rating,
       recommend: review.recommend
     }
-
+    part2._id = newReviewId;
     for (let key in review.characteristics) {
       const found = await MetaModel.getCharsName(Number(key))
       part2.characteristics.push({'id': Number(key), 'name': found, 'value': review.characteristics[key]})

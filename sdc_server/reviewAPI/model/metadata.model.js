@@ -21,7 +21,7 @@ module.exports = {
       aggCursor = await metadata.aggregate(pipeline);
     } catch (e) {
       console.error(`Uhhh, unable to proceed aggregation, ${e}`)
-      return {}
+      return {};
     }
   },
   addMetadata: async (data) => {
@@ -38,6 +38,7 @@ module.exports = {
       return cursor.name;
     } catch (e) {
       console.error(`Uhhh, no characteristic ID found with the id ${e}`)
+      return '';
     }
   }
 }

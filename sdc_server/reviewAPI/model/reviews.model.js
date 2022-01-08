@@ -1,6 +1,6 @@
 const MetaModel = require('./metadata.model.js');
-const mongodb = require('mongodb')
-const { ObjectId } = mongodb;
+// const mongodb = require('mongodb')
+// const { ObjectId } = mongodb;
 let reviews;
 
 module.exports = {
@@ -49,10 +49,32 @@ module.exports = {
       return { results: [] }
     }
   },
+  getLastInsertedDoc: async () => {
+    const pipeline = [
+      {
+        '$sort': {
+          'review_id': -1
+        }
+      }, {
+        '$project': {
+          'review_id': 1,
+          '_id': 0
+        }
+      }, {
+        '$limit': 1
+      }
+    ]
+    try {
+      const aggCursor = await reviews.aggregate(pipeline).toArray()
+      return aggCursor[0].review_id;
+    } catch (e) {
+      console.error(`Uhhh, unable to proceed aggregation, ${e}`)
+      return { results: 0 }
+    }
+  },
   createReview: async (part1, part2) => {
     try {
-      const cursorA = await reviews.insertOne(part1)
-      part2['_id'] = cursorA.insertedId;
+      await reviews.insertOne(part1)
       return await MetaModel.addMetadata(part2)
     } catch (e) {
       console.error(`Uhhh, unable to post review ${e}`)
@@ -61,7 +83,7 @@ module.exports = {
   },
   updateHelpful: async (id) => {
     try {
-      const cursor = await reviews.updateOne({ 'review_id': id }, { $inc: { 'helpfulness': 1 } })
+      const updateResponse = await reviews.updateOne({ 'review_id': id }, { $inc: { 'helpfulness': 1 } })
       return updateResponse;
     } catch (e) {
       console.error(`Uhhh, unable to increment helpfulness count ${e}`)

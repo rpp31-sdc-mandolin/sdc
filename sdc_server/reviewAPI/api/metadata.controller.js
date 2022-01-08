@@ -6,8 +6,12 @@ module.exports = {
 
     try {
       const  metadata  = await MetaModel.getMetadata(product_id)
-      let response = metadata;
-
+      let response = {
+        product_id: product_id,
+        ratings: {},
+        recommended: {},
+        characteristics: {}
+      };
       res.status(201).json(response)
     } catch (e) {
       res.status(500).json({ error: e })
