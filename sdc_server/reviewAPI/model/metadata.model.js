@@ -14,14 +14,26 @@ module.exports = {
     }
   },
   getMetadata: async (product_id) => {
-    const pipeline = [];
+    const pipeline = [
+      {
+        '$match': {
+          'product_id': product_id
+        }
+      }, {
+        '$project': {
+          '_id': 0,
+          'product_id': 0
+        }
+      }
+    ];
 
-    let aggCursor;
+    let arrCursor;
     try {
-      aggCursor = await metadata.aggregate(pipeline);
+      arrCursor = await metadata.aggregate(pipeline).toArray();
+      return arrCursor;
     } catch (e) {
       console.error(`Uhhh, unable to proceed aggregation, ${e}`)
-      return {};
+      return { results: [] };
     }
   },
   addMetadata: async (data) => {
@@ -40,5 +52,6 @@ module.exports = {
       console.error(`Uhhh, no characteristic ID found with the id ${e}`)
       return '';
     }
-  }
+  },
+
 }
