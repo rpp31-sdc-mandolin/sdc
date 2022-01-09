@@ -14,7 +14,7 @@ module.exports = {
       console.error(`Unable to establish a collection handle in reviewService: ${e}`)
     }
   },
-  getReviews: async (page = 0, count = 5, sort, product_id) => {
+  getReviews: async (page, count, sort, product_id) => {
     let pipeline = [{ $match: { 'product_id': product_id }}]
     if (sort) {
       switch (sort) {

@@ -4,7 +4,7 @@ const MetaModel = require('../model/metadata.model.js')
 module.exports = {
   apiGetReviews: async (req, res) => {
     const page = req.query.page ? Number(req.query.page) : 0;
-    const count = req.query.count ? Number(req.query.count) : 5;
+    const count = req.query.count ? Number(req.query.count) : 20;
     const sort = req.query.sort ? req.query.sort : 'relevant';
     const product_id = Number(req.query.product_id);
 
@@ -25,11 +25,12 @@ module.exports = {
     const review = req.body;
     const part1 = {
       body: review.body,
-      date: new Date().toISOString(),
+      date: new Date(),
+      helpfulness: 0,
       photos: [],
-      product_id: review.product_id,
-      rating: review.rating,
-      recommend: review.recommend,
+      product_id: Number(review.product_id),
+      rating: Number(review.rating),
+      recommend: Boolean(review.recommend),
       reported: false,
       response: null,
       review_id: 0,
