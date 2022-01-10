@@ -17,7 +17,7 @@ module.exports = {
         characteristics: calculated
       };
 
-      res.status(201).json(response)
+      res.status(200).json(response)
     } catch (e) {
       res.status(500).json({ error: e.message })
     }

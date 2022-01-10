@@ -4,7 +4,7 @@ const MetaModel = require('../model/metadata.model.js')
 module.exports = {
   apiGetReviews: async (req, res) => {
     const page = req.query.page ? Number(req.query.page) : 0;
-    const count = req.query.count ? Number(req.query.count) : 20;
+    const count = req.query.count ? Number(req.query.count) : 5;
     const sort = req.query.sort ? req.query.sort : 'relevant';
     const product_id = Number(req.query.product_id);
 
