@@ -1,25 +1,26 @@
+const path = require('path');
+const compression = require('compression');
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
 const dotenv = require('dotenv');
 const result = dotenv.config();
 if (result.error) {
   throw result.error
 }
-
-console.log(result.parsed);
-
-const path = require('path');
-const compression = require('compression');
-const express = require('express');
-const bodyParser = require('body-parser');
-
-const app = express();
-const axios = require('axios').default;
-const controllers = require('./controllers.js');
-
 //to save outfitIds as cookies
 const cookieParser = require('cookie-parser');
 const middleware = require('./middle.js');
-app.use(cookieParser());
 
+const main = require('./../sdc_server/reviewAPI/index.js')
+const reviews = require('./../sdc_server/reviewAPI/api/reviews.route.js');
+main(app).catch(console.err)
+
+
+const axios = require('axios').default;
+const controllers = require('./controllers.js');
+
+app.use(cookieParser());
 app.use(compression());
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended: true}));
@@ -47,18 +48,9 @@ app.put('/qa/answers/:answer_id/helpful', controllers.questions_answers.updateAn
 app.put('/qa/answers/:answer_id/report', controllers.questions_answers.reportAnswer);
 app.post('/qa/questions/:question_id/answers', controllers.questions_answers.postAnswer);
 
-app.get('/reviews', controllers.reviews.getAllReviews);
-app.post('/reviews', controllers.reviews.postReviews);
-app.get('/reviews/meta', controllers.reviews.getReviewsMeta);
-app.put('/reviews/helpful', controllers.reviews.markHelpful);
-app.put('/reviews/:review_id/report', controllers.reviews.reportReview);
+app.use('/reviews', reviews)
 
 app.get('/cart', controllers.cart.getProductsInCart);
 app.post('/cart', controllers.cart.postProductToCart);
 
 app.post('/interactions', controllers.interactions.postInteraction);
-
-let port = 3000;
-app.listen(port, () => {
-  console.log(`Server is listening on port: ${port}`);
-});

@@ -21,12 +21,8 @@ class Review extends React.Component {
 
   markHelpful(e) {
     $.ajax({
-      url: '/reviews/helpful',
+      url: `/reviews/${this.props.review.review_id}/helpful`,
       method: 'PUT',
-      data: JSON.stringify({
-        review_id: this.props.review.review_id
-      }),
-      contentType: 'application/json',
       success: data => {
         this.setState({
           markedHelpful: true
@@ -39,12 +35,8 @@ class Review extends React.Component {
 
   reportReview() {
     $.ajax({
-      url: '/reviews/:review_id/report',
+      url: `/reviews/${this.props.review.review_id}/report`,
       method: 'PUT',
-      data: JSON.stringify({
-        review_id: this.props.review.review_id
-      }),
-      contentType: 'application/json',
       success: data => {
         this.props.report(this.props.index)
         alert('Report has been received.  You will no longer see this review.')
