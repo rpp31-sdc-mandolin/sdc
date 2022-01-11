@@ -1,6 +1,5 @@
 const { MongoClient } = require('mongodb');
-// const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
-// client.connect()
+
 let product;
 
 async function connectToDB(client) {
@@ -15,26 +14,6 @@ async function connectToDB(client) {
 }
 
 async function getAllProducts(callback) {
-  // const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
-  // connection pool
-
-  // try {
-  //   // await client.connect(() => {
-  //   //   console.log('CONNECTED')
-  //   // })
-  //   // await client.connect();
-  //   const result = await aggAllProducts(client);
-  //   callback(null, result);
-  // } catch (e) {
-  //   console.log('ERROR', e)
-  //   callback(e, null);
-  // }
-  // finally {
-  //   // await client.close(() => {
-  //   //   console.log('ENDING')
-  //   // });
-  //   await client.close();
-  // }
 
   try {
     const result = await aggAllProducts()
@@ -47,56 +26,30 @@ async function getAllProducts(callback) {
 
 async function getProduct(target, callback) {
   target = Number(target)
-  // const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
+
 
   try {
-    // await client.connect(() => {
-    //   console.log('CONNECTED')
-    // })
-    // await client.connect();
     const result = await aggGetProduct(target);
     callback(null, result)
-    // return result
   } catch (err) {
-    // return err
     callback(err, null)
   }
-  // finally {
-  //   // await client.close(() => {
-  //   //   console.log('ENDING')
-  //   // });
-  //   await product.close();
-  // }
 }
 
 
 async function getProductStyle(target, callback) {
   target = Number(target)
-  // const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
 
   try {
-    // await client.connect(() => {
-    //   console.log('CONNECTED')
-    // })
-    // await client.connect();
     const result = await aggGetProductStyle(target);
     callback(null, finalResult(result))
   } catch (e) {
     callback(e, null)
   }
-  // finally {
-  //   // await client.close(() => {
-  //   //   console.log('ENDING')
-  //   // });
-  //   await client.close();
-  // }
 }
 
-// getAllProducts()
-
-
 async function aggAllProducts (id) {
-  const cursor = product.find({}).sort({id: 1}).limit(5)
+  const cursor = await product.find({}).sort({id: 1}).limit(5)
   // var stats = await cursor.explain('executionStats')
   // console.log('getAllProducts stats', stats)
   const dbResult = await cursor.toArray()
@@ -117,24 +70,9 @@ async function aggAllProducts (id) {
 }
 
 async function aggGetProduct (target) {
-  const cursor = product.find({id: target})
+  const cursor = await product.find({id: target})
   // var stats = await cursor.explain('executionStats')
   // console.log('getProduct stats', stats)
-
-  // const result = await cursor.toArray()
-
-  // // return result[0]
-
-
-  // return ({
-  //   'id': result[0].id,
-  //   'name': result[0].name,
-  //   'slogan': result[0].slogan,
-  //   'description': result[0].description,
-  //   'category': result[0].category,
-  //   'default_price': result[0].default_price.toString(),
-  //   'features': result[0].features
-  // })
   const filterFeatures = (array) => {
     for ( let i = 0; i < array.length; i++ ) {
       if (array[i].value === 'null') {
@@ -158,12 +96,8 @@ async function aggGetProduct (target) {
 
 async function aggGetProductStyle (target) {
 
-  const cursor = product.find({id: target})
+  const cursor = await product.find({id: target})
   // var stats = await cursor.explain('executionStats')
-  // const search = await cursor.toArray()
-  // const product = search[0]
-
-  // return product
 
   for await (const doc of cursor) {
     return doc

@@ -2,6 +2,8 @@ const newrelic = require('newrelic');
 const { MongoClient } = require('mongodb');
 const dotenv = require('dotenv');
 const db = require('../sdc_server/productAPI/product.js')
+// const initializeDatabases = require('../sdc_server/productAPI/dbIndex.js');
+// const routes = require('./sdc_routes.js');
 const result = dotenv.config();
 if (result.error) {
   throw result.error
@@ -28,6 +30,13 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../client/dist')));
+
+// initializeDatabases()
+//   .then( dbs => {
+//     routes(app, dbs).listen(3000, () => console.log('Listening on port 3000'))
+// }). catch ( err => {
+//   console.log(err)
+// })
 
 app.get('/products', controllers.products.getAllProducts);
 app.get('/products/:product_id', controllers.products.getProductByID);
@@ -61,7 +70,9 @@ app.post('/cart', controllers.cart.postProductToCart);
 
 app.post('/interactions', controllers.interactions.postInteraction);
 
-MongoClient.connect('mongodb://127.0.0.1:27017/sdc_test')
+MongoClient.connect('mongodb://127.0.0.1:27017/sdc_test', {
+  useUnifiedTopology: true,
+})
 .catch(err => {
   console.log(err)
 })
@@ -71,4 +82,3 @@ MongoClient.connect('mongodb://127.0.0.1:27017/sdc_test')
     console.log(`Server is listening on port: ${port}`);
   });
 })
-// let port = 3000;

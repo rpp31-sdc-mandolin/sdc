@@ -7,7 +7,7 @@ export const options = {
 }
 
 export default function () {
-  const url = 'http://127.0.0.1:3000/products/995477';
+  const url = 'http://127.0.0.1:3000/products/995953';
 
   // const params = {
   //   headers: {
