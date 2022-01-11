@@ -7,11 +7,8 @@ async function main() {
   try {
     await client.connect();
     console.log('Connected successfully to server');
-    // await listDatabases(client);
-    // await transformReviewModel(client);
-    for (var i = 1; i <= 5774952; i++) {
-      await transformMetadataModel(client, i);
-    }
+    // await deleteDocs(client);
+
   } catch(error) {
     console.log(error);
   } finally {
@@ -20,6 +17,18 @@ async function main() {
 }
 main().catch(console.error)
 
+async function deleteDocs(client) {
+  const pipeline = [
+    { '$match': { 'product_id': 1000007 } },
+    { '$sort': { '_id': -1 } },
+    { '$limit': 58 }
+  ];
+  let aggCursor = await client.db('reviewService').collection('reviews').aggregate(pipeline).map((d) => d.review_id).toArray()
+
+  for (var i = 0; i < aggCursor.length; i++) {
+    await client.db('reviewService').collection('reviews').deleteOne({ 'review_id': aggCursor[i] })
+  }
+}
 async function listDatabases(client) {
   const databasesList = await client.db().admin().listDatabases();
 
