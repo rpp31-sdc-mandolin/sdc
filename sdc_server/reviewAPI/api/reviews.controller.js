@@ -43,16 +43,15 @@ module.exports = {
     review.photos.forEach(url => part1.photos.push({'url': url}) )
 
     const part2 = {
-      _id: 0,
+      _id: newReviewId,
       characteristics: [],
-      product_id: review.product_id,
-      rating: review.rating,
-      recommend: review.recommend
+      product_id: Number(review.product_id),
+      rating: Number(review.rating),
+      recommend: Boolean(review.recommend)
     }
-    part2._id = newReviewId;
     for (let key in review.characteristics) {
       const found = await MetaModel.getCharsName(Number(key))
-      part2.characteristics.push({'id': Number(key), 'name': found, 'value': review.characteristics[key]})
+      part2.characteristics.push({'id': Number(key), 'name': found, 'value': Number(review.characteristics[key])})
     }
 
     try {
