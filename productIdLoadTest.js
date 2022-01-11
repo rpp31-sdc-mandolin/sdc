@@ -2,12 +2,12 @@ import http from 'k6/http';
 import {sleep} from 'k6';
 
 export const options = {
-  vus: 175,
+  vus: 200,
   duration: '60s'
 }
 
 export default function () {
-  const url = 'http://127.0.0.1:3000/products';
+  const url = 'http://127.0.0.1:3000/products/995477';
 
   // const params = {
   //   headers: {

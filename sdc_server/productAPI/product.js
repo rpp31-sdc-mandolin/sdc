@@ -1,80 +1,102 @@
 const { MongoClient } = require('mongodb');
 // const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
 // client.connect()
+let product;
+
+async function connectToDB(client) {
+  if (product) {
+    return
+  }
+  try {
+    product = await client.db("sdc_test").collection("document_test")
+  } catch (err) {
+    console.log(err)
+  }
+}
 
 async function getAllProducts(callback) {
-  const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
+  // const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
   // connection pool
 
+  // try {
+  //   // await client.connect(() => {
+  //   //   console.log('CONNECTED')
+  //   // })
+  //   // await client.connect();
+  //   const result = await aggAllProducts(client);
+  //   callback(null, result);
+  // } catch (e) {
+  //   console.log('ERROR', e)
+  //   callback(e, null);
+  // }
+  // finally {
+  //   // await client.close(() => {
+  //   //   console.log('ENDING')
+  //   // });
+  //   await client.close();
+  // }
+
   try {
-    // await client.connect(() => {
-    //   console.log('CONNECTED')
-    // })
-    await client.connect();
-    const result = await aggAllProducts(client);
-    callback(null, result);
+    const result = await aggAllProducts()
+    callback(null, result)
   } catch (e) {
-    console.log('ERROR', e)
-    callback(e, null);
-  } finally {
-    // await client.close(() => {
-    //   console.log('ENDING')
-    // });
-    await client.close();
+    callback(e, null)
   }
 
 }
 
 async function getProduct(target, callback) {
   target = Number(target)
-  const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
+  // const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
 
   try {
     // await client.connect(() => {
     //   console.log('CONNECTED')
     // })
-    await client.connect();
-    const result = await aggGetProduct(client, target);
+    // await client.connect();
+    const result = await aggGetProduct(target);
     callback(null, result)
-  } catch (e) {
-    console.log('ERROR', e)
-    callback(e, null);
-  } finally {
-    // await client.close(() => {
-    //   console.log('ENDING')
-    // });
-    await client.close();
+    // return result
+  } catch (err) {
+    // return err
+    callback(err, null)
   }
+  // finally {
+  //   // await client.close(() => {
+  //   //   console.log('ENDING')
+  //   // });
+  //   await product.close();
+  // }
 }
 
 
 async function getProductStyle(target, callback) {
   target = Number(target)
-  const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
+  // const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
 
   try {
     // await client.connect(() => {
     //   console.log('CONNECTED')
     // })
-    await client.connect();
-    const result = await aggGetProductStyle(client, target);
+    // await client.connect();
+    const result = await aggGetProductStyle(target);
     callback(null, finalResult(result))
   } catch (e) {
-    console.log('ERROR', e)
     callback(e, null)
-  } finally {
-    // await client.close(() => {
-    //   console.log('ENDING')
-    // });
-    await client.close();
   }
+  // finally {
+  //   // await client.close(() => {
+  //   //   console.log('ENDING')
+  //   // });
+  //   await client.close();
+  // }
 }
 
 // getAllProducts()
 
 
-async function aggAllProducts (client, id) {
-  const cursor = client.db("sdc_test").collection("document_test").find({}).sort({id: 1}).limit(5)
+async function aggAllProducts (id) {
+  const cursor = product.find({}).sort({id: 1}).limit(5)
   // var stats = await cursor.explain('executionStats')
   // console.log('getAllProducts stats', stats)
   const dbResult = await cursor.toArray()
@@ -94,36 +116,58 @@ async function aggAllProducts (client, id) {
   return result;
 }
 
-async function aggGetProduct (client, target) {
-  const cursor = client.db("sdc_test").collection("document_test").find({id: target})
+async function aggGetProduct (target) {
+  const cursor = product.find({id: target})
   // var stats = await cursor.explain('executionStats')
   // console.log('getProduct stats', stats)
-  const result = await cursor.toArray()
 
-  // return result[0]
+  // const result = await cursor.toArray()
+
+  // // return result[0]
 
 
-  return ({
-    'id': result[0].id,
-    'name': result[0].name,
-    'slogan': result[0].slogan,
-    'description': result[0].description,
-    'category': result[0].category,
-    'default_price': result[0].default_price.toString(),
-    'features': result[0].features
-  })
+  // return ({
+  //   'id': result[0].id,
+  //   'name': result[0].name,
+  //   'slogan': result[0].slogan,
+  //   'description': result[0].description,
+  //   'category': result[0].category,
+  //   'default_price': result[0].default_price.toString(),
+  //   'features': result[0].features
+  // })
+  const filterFeatures = (array) => {
+    for ( let i = 0; i < array.length; i++ ) {
+      if (array[i].value === 'null') {
+        array[i].value = null
+      }
+    }
+    return array
+  }
+  for await (const doc of cursor) {
+    return ({
+    'id': doc.id,
+    'name': doc.name,
+    'slogan': doc.slogan,
+    'description': doc.description,
+    'category': doc.category,
+    'default_price': doc.default_price.toString(),
+    'features': filterFeatures(doc.features)
+    })
+  }
 }
 
-async function aggGetProductStyle (client, target) {
+async function aggGetProductStyle (target) {
 
-  const cursor = client.db("sdc_test").collection("document_test").find({id: target})
+  const cursor = product.find({id: target})
   // var stats = await cursor.explain('executionStats')
-  // console.log('stats', stats)
-  const search = await cursor.toArray()
-  const product = search[0]
+  // const search = await cursor.toArray()
+  // const product = search[0]
 
-  return product
+  // return product
 
+  for await (const doc of cursor) {
+    return doc
+  }
 }
 
 const filterSkus = (array, target) => {
@@ -166,6 +210,7 @@ const finalResult = (product) => {
 
 
 module.exports = {
+  connectToDB: connectToDB,
   getAllProducts: getAllProducts,
   getProduct: getProduct,
   getProductStyle: getProductStyle

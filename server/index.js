@@ -1,11 +1,14 @@
+const newrelic = require('newrelic');
+const { MongoClient } = require('mongodb');
 const dotenv = require('dotenv');
+const db = require('../sdc_server/productAPI/product.js')
 const result = dotenv.config();
 if (result.error) {
   throw result.error
 }
 
 console.log(result.parsed);
-
+const port = 3000;
 const path = require('path');
 const compression = require('compression');
 const express = require('express');
@@ -58,7 +61,14 @@ app.post('/cart', controllers.cart.postProductToCart);
 
 app.post('/interactions', controllers.interactions.postInteraction);
 
-let port = 3000;
-app.listen(port, () => {
-  console.log(`Server is listening on port: ${port}`);
-});
+MongoClient.connect('mongodb://127.0.0.1:27017/sdc_test')
+.catch(err => {
+  console.log(err)
+})
+.then(async client => {
+  await db.connectToDB(client)
+  app.listen(port, () => {
+    console.log(`Server is listening on port: ${port}`);
+  });
+})
+// let port = 3000;
