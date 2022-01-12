@@ -1,13 +1,17 @@
 
 
+
+const newRelic = require('newrelic');
 const express = require('express');
 const bodyParser = require('body-parser');
 const compression = require('compression');
+
 
 const {questionsForProduct} = require('../Controllers/fetch.js');
 const {fetchAllAnswersAndPhotos} = require('../Controllers/fetch.js');
 const {questionInsert} = require('../Controllers/insert.js');
 const {answerPhotoAggregateInsert} = require('../Controllers/insert.js');
+const {newQuestionsForProduct} = require('../Controllers/fetch.js');
 const update = require('../Controllers/update.js');
 
 const app = express();
@@ -19,10 +23,13 @@ app.use(compression());
 app.use(express.json());
 
 
-app.get('/qa/questions/', (req,res)=>{
+/*app.get('/qa/questions/', (req,res)=>{
+
   var product_id = req.query.product_id;
+  //console.log("at endpoint", product_id);
   questionsForProduct(product_id)
   .then((data) => {
+
     res.statusCode = 200;
     res.send((data));
   })
@@ -31,16 +38,68 @@ app.get('/qa/questions/', (req,res)=>{
     res.send(error);
   })
 
+});*/
+app.get('/qa/questions/', (req,res)=>{
+  console.time('fetchQuestions');
+  var product_id = req.query.product_id;
+  var resultObj = {};
+  resultObj.product_id = product_id;
+  resultObj.results = [];
+  newQuestionsForProduct(product_id)
+  .then((questions) => {
+    var fetchAnswersArray = [];
+
+    for(var i=0; i<questions.length; i++) {
+
+        fetchAnswersArray.push(fetchAllAnswersAndPhotos(questions[i].question_id,"questions"))
+    }
+    Promise.all(fetchAnswersArray)
+    .then((answersWithPhotos) => {
+      for(var i=0; i<questions.length; i++) {
+        /*var newAnswers = answersWithPhotos[i].map((answer) => {
+          var newPhotos = answer.photos.map((photo) => {
+
+            return photo.url;
+          })
+          //console.log(newPhotos);
+          answer.photos = newPhotos.slice(0);
+          answer.answer_id = answer.id;
+          return answer;
+        });*/
+        var newAnswers = answersWithPhotos[i].slice(0);
+        for(var j=0; j< newAnswers.length; j++){
+          questions[i].answers[newAnswers[j].id] = newAnswers[j];
+        }
+
+        resultObj.results.push(questions[i]);
+      }
+
+      res.statusCode = 200;
+      res.send((resultObj));
+      console.timeEnd('fetchQuestions');
+    })
+    .catch((error) => {
+      res.statusCode = 404;
+      res.send(error);
+    })
+
+  })
+  .catch((error) => {
+    res.statusCode = 404;
+    res.send(error);
+  })
 });
 app.get('/qa/questions/:question_id/answers', (req,res) => {
+  console.time('fetchAnswers');
+  //console.log('req reached');
   var question_id = req.params.question_id;
-  console.log("Question Id from request obj:", req.params.question_id);
+  //console.log("Question Id from request obj:", req.params.question_id);
   var resultObj = {};
   resultObj.question = question_id;
-  fetchAllAnswersAndPhotos(question_id)
+  fetchAllAnswersAndPhotos(question_id,'answers')
   .then((answersAndPhotos) => {
     resultObj.results = [];
-      answersAndPhotos.forEach((answer) => {
+     /* answersAndPhotos.forEach((answer) => {
         var answerObj = {};
           answerObj.answer_id = answer.id;
           answerObj.body = answer.body;
@@ -55,10 +114,17 @@ app.get('/qa/questions/:question_id/answers', (req,res) => {
             answerObj.photos.push(photoObj);
           });
 
+
           resultObj.results.push( answerObj);
-       });
+          //answer.answer_id = answer.id;
+          //resultObj.results.push(answer);
+       });*/
+       //console.log("now giving back without modification")
+       resultObj.results = answersAndPhotos.slice(0);
+      //console.log(resultObj);
     res.statusCode = 200;
     res.send(resultObj);
+    console.timeEnd('fetchAnswers');
   })
   .catch((error) => {
     res.statusCode = 404;
@@ -105,11 +171,11 @@ app.put('/qa/questions/:question_id/report', (req, res) => {
   var questionId = req.params.question_id;
   update.updateQuestionReport(questionId, (err,data) => {
     if(err) {
-      res.statusCode(404);
-      res.send(err)
+      res.status(404).send(err);
+      //res.send(err)
     } else {
-      res.statusCode(204);
-      res.send();
+      res.status(204).send();
+      //res.send();
     }
   })
 });
@@ -123,28 +189,30 @@ app.put('/qa/answers/:answer_id/report', (req, res) => {
 
   })
   .catch((error) => {
-    res.status(404).send();
+    res.status(404).send(error);
   })
 });
 app.put('/qa/answers/:answer_id/helpful', (req, res) => {
   var answerId = req.params.answer_id;
   update.updateAnswerHelpful(answerId)
   .then((data) => {
-    res.status(404).send(err)
+    res.status(204).send(data)
   })
   .catch((error) => {
-    res.status(204).send();
+    res.status(404).send(error);
   })
 });
 app.put('/qa/questions/:question_id/helpful', (req, res) => {
   var questionId = req.params.question_id;
+  console.log("REACHED HERE");
+  console.log('questionId', questionId);
   update.updateQuestionHelpful(questionId, (err,data) => {
     if(err) {
-      res.statusCode(404);
-      res.send(err)
+      res.status(404).send(err);
+      //res.send(err)
     } else {
-      res.statusCode(204);
-      res.send();
+      res.status(204).send();
+      //res.send();
     }
   })
 });

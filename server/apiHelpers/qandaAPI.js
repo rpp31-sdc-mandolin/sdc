@@ -2,7 +2,7 @@ const axios = require('axios');
 const config = require('../../config.js');
 
 //const server = 'https://app-hrsei-api.herokuapp.com/api/fec2/hr-rpp/qa/questions'
-const server = 'http://localhost:4000/qa/questions'
+const server = 'http://localhost:4000/qa/questions';
 const getQuestions = (productID, callback) => {
   let options = {
     url: server,
@@ -12,8 +12,8 @@ const getQuestions = (productID, callback) => {
       'Authorization': config.API_KEY || process.env.API_KEY
     },
     params: {
-      //product_id: productID,
-      product_id:34,
+     product_id: productID,
+      //product_id:34,
       page: 1,
       count: 100
     }
@@ -31,6 +31,7 @@ const getQuestions = (productID, callback) => {
 };
 
 const getAnswersByID = (questionID, callback) => {
+  console.log("get Answers");
   let options = {
     url: server + questionID + '/answers',
     method: 'get',
@@ -81,6 +82,7 @@ const postQuestions = (questionData, callback) => {
 
 
 const putQuestions = (questionID, callback) => {
+  console.log("Clicked yes");
   let options = {
     url: server + '/' + questionID + '/helpful',
     method: 'put',
@@ -101,8 +103,8 @@ const putQuestions = (questionID, callback) => {
 
 const putAnswers = (answerID, callback) => {
   let options = {
-    url: `https://app-hrsei-api.herokuapp.com/api/fec2/hr-rpp/qa/answers/${answerID}/helpful`,
-
+   // url: `https://app-hrsei-api.herokuapp.com/api/fec2/hr-rpp/qa/answers/${answerID}/helpful`,
+    url: `http://localhost:4000/qa/answers/${answerID}/helpful`,
     method: 'put',
     headers: {
       'User-Agent': 'request',
@@ -121,8 +123,8 @@ const putAnswers = (answerID, callback) => {
 
 const reportAnswers = (answerID, callback) => {
   let options = {
-    url: `https://app-hrsei-api.herokuapp.com/api/fec2/hr-rpp/qa/answers/${answerID}/report`,
-    //url: `http://localhost:4000/qa/answers/${answerID}/report`,
+   // url: `https://app-hrsei-api.herokuapp.com/api/fec2/hr-rpp/qa/answers/${answerID}/report`,
+    url: `http://localhost:4000/qa/answers/${answerID}/report`,
     method: 'put',
     headers: {
       'User-Agent': 'request',

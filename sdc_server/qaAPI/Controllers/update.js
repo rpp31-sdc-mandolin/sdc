@@ -27,6 +27,7 @@ const updateAnswerReport = function(answer_id) {
 }
 const updateQuestionHelpful = function(questionId, callback) {
   var filter = {question_id: questionId};
+  console.log("reached updateQuestionHelpful");
   Question.findOneAndUpdate(filter, {$inc:{'question_helpfulness': 1}},(error, data) => {
     if(error) {
       callback(error);

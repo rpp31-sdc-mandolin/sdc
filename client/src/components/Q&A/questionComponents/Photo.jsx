@@ -4,7 +4,7 @@ import PhotoModal from '../modalComponents/PhotoModal.jsx';
 
 const Photo = ({ photo }) => {
   const [showModal, setShowModal] = useState(false);
-
+  console.log('photo', photo)
   return (
     <>
       <div

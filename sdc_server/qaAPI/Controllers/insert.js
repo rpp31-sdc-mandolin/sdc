@@ -1,8 +1,8 @@
 
 
-//const {Answer} = require('./db.js');
+
 const {Question} = require('../Model/db.js');
-//const {AnswersPhotos} = require('./db.js');
+
 const {AnswerPhotosAggregate} = require('../Model/db.js');
 
 //to get the next Id to insert data
@@ -22,6 +22,40 @@ const getNextId = (db) => {
 
   });
 }
+
+//var timestamp = new Date().getUTCMilliseconds();
+var now = new Date();
+
+var timestamp = now.getFullYear().toString(); // 2011
+timestamp += (now.getMonth < 9 ? '0' : '') + now.getMonth().toString(); // JS months are 0-based, so +1 and pad with 0's
+timestamp += ((now.getDate < 10) ? '0' : '') + now.getDate().toString();
+timestamp += ((now.getDate < 10) ? '0' : '') + now.getHours().toString();
+timestamp += ((now.getDate < 10) ? '0' : '') + now.getMinutes().toString();
+timestamp += ((now.getDate < 10) ? '0' : '') + now.getSeconds().toString();
+timestamp += ((now.getDate < 10) ? '0' : '') + now.getMilliseconds().toString();
+
+//timestamp += ((now.getDate < 10) ? '0' : '') + now.getNanoSeconds().toString();
+
+console.log(timestamp);
+
+const getNextRandomId = (db) => {
+  return new Promise ((resolve, reject) => {
+
+      //let id = Math.floor(Math.random())
+      var now = new Date();
+
+      var timestamp = now.getFullYear().toString(); // 2011
+      timestamp += (now.getMonth < 9 ? '0' : '') + now.getMonth().toString(); // JS months are 0-based, so +1 and pad with 0's
+      timestamp += ((now.getDate < 10) ? '0' : '') + now.getDate().toString();
+      timestamp += ((now.getDate < 10) ? '0' : '') + now.getHours().toString();
+      timestamp += ((now.getDate < 10) ? '0' : '') + now.getMinutes().toString();
+      timestamp += ((now.getDate < 10) ? '0' : '') + now.getSeconds().toString();
+      timestamp += ((now.getDate < 10) ? '0' : '') + now.getMilliseconds().toString();
+      resolve(Number(timestamp))
+    });
+
+
+}
 /*getNextId(AnswersPhotos)
 .then((data) => {
   console.log('data', data);
@@ -34,7 +68,7 @@ const getNextId = (db) => {
 const questionInsert = (questionData, callback) => {
   let id;
   let question={};
-  getNextId(Question)
+  getNextRandomId(Question)
   .then((nextId) => {
 
       id = nextId;
@@ -132,7 +166,7 @@ const questionInsert = (questionData, callback) => {
 const answerPhotoAggregateInsert = function(answerData, question_id, callback) {
   let id;
   let answer = {};
-  getNextId(AnswerPhotosAggregate)
+  getNextRandomId(AnswerPhotosAggregate)
   .then((nextId) => {
       console.log('answerData:',answerData);
       id = nextId;
@@ -149,13 +183,13 @@ const answerPhotoAggregateInsert = function(answerData, question_id, callback) {
         for(var i=1; i<=answerData.photos.length; i++) {
           var photoObj = {};
           photoObj.id = i;
-          photoObj.url = answerData.photos[i].url;
+          photoObj.url = answerData.photos[i];
           photoObj.answer_id = answer.id;
           answer.photos.push(photoObj);
         }
       }
 
-      let newAnswer =new AnswerPhotosAggregate(answer);
+      let newAnswer = new AnswerPhotosAggregate(answer);
       newAnswer.save((err) => {
         if(err){
 

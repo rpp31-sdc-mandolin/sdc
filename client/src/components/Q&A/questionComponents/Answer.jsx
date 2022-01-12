@@ -30,7 +30,7 @@ const Answer = ({ answer, questionAsker, getQuestions }) => {
         event.target.innerHTML = 'Reported';
       })
   }
-
+  console.log('answer:', answer);
   return (
     <div data-testid="answer" className="answer">
       <div className="answer-content">

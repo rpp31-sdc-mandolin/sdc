@@ -24,7 +24,8 @@ let questionSchema = new mongoose.Schema({
   question_id: {
     type:Number,
     required:true,
-    index:true
+    index:true,
+    unique: true
   },
   product_id: {
     type:Number,
@@ -47,7 +48,8 @@ let answerSchema = new mongoose.Schema({
   id:{
     type:Number,
     required:true,
-    index:true
+    index:true,
+
   },
   question_id: {
     type:Number,
@@ -100,7 +102,8 @@ let answerPhotosAggregateSchema = new mongoose.Schema({
   id:{
     type:Number,
     required:true,
-    index:true
+    index:true,
+    unique: true
   },
   question_id: {
     type:Number,

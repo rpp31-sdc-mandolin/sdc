@@ -31,6 +31,7 @@ class QuestionEntry extends React.Component {
     const clicked = localStorage.getItem(`clicked-${question_id}`) === 'true';
 
     if (!clicked) {
+      console.log("clicked");
       axios.put(`qa/questions/${question_id}/helpful`)
         .then((response) => {
             this.setState({ helpful: this.state.helpful + 1});

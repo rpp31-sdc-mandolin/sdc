@@ -1,128 +1,99 @@
 
 
 
-//const {Answer} = require('../Model/db.js');
+
 
 const {Question} = require('../Model/db.js');
-//const {AnswersPhotos} = require('../Model/db.js');
 const {AnswerPhotosAggregate} = require('../Model/db.js');
 
 
-/*let questionsForProductWithOutAggregate = function(productId) {
-  return new Promise((resolve, reject) => {
-    var resultObj = {};
-    resultObj.product_id = productId;
-    Question.find({product_id:productId}, (err,questions) => {
-       if(err) {
-         reject(err)
-       }else {
-        // console.log("got the questions", questions);
 
-         var fetchAnswersArray = [];
-         for(var question of questions) {
-          fetchAnswersArray.push(fetchAllAnswersForQuestion(question.question_id))
-         }
-         Promise.all(fetchAnswersArray)
-         .then((answersWithPhotos) => {
-
-            for(var i=0; i < questions.length; i++) {
-
-              var answers = answersWithPhotos[i].results.slice(0);
-              questions[i].answers = {};
-              answers.forEach((answer) => {
-                let property = answer.id;
-                questions[i].answers[property] = answer;
-              })
-
-
-            }
-            resultObj.results = questions.slice(0);
-            //console.log('questions',questions[0]['97'].photos);
-            //console.log('resultObj:',resultObj.questions[questions.length-1]);
-            console.log('resultObj:',resultObj.results[questions.length-1].answers)
-            resolve(resultObj);
-         })
-
-       }
-    })
-  })
-}
-let fetchAllAnswersForQuestion = function(questionId) {
+ let fetchAllAnswersAndPhotos = function(questionId,endPoint){
   return new Promise((resolve, reject) => {
 
-
-         var resultObj = {};
-         resultObj.question = questionId;
-         var  fetchPhotosForAnswerArray = [];
-         console.log('questionId',questionId);
-         Answer.find({question_id:questionId}, (error,answers) => {
-            if(error) {
-              reject(error)
-            } else{
-              //console.log("answers", answers);
-
-              for(var answer of answers) {
-                fetchPhotosForAnswerArray.push(fetchPhotosForAnswer(answer.id));
-                answer.answer_id = answer.id;
-              }
-              //console.log('fetchPhotosForAnswerArray:',fetchPhotosForAnswerArray);
-              Promise.all(fetchPhotosForAnswerArray)
-              .then((photosArray) => {
-                for(var i=0; i<answers.length; i++) {
-
-                  answers[i].photos = photosArray[i].slice(0);
-                 // console.log('answers['+i+']:',answers[i].photos);
-                }
-
-                resultObj.results = answers.slice(0);
-               //console.log('resultObj photos',resultObj.results[0]._id);
-                resolve(resultObj);
-              })
-              .catch((error) => {
-                console.log('error', error);
-                reject(error);
-              })
-            }
-         })
-
-
-  })
-}
-let fetchPhotosForAnswer = function(answerId){
-  return new Promise((resolve, reject) => {
-
-    AnswersPhotos.find({answer_id:answerId}, (error, photos) => {
-      if(error) {
-        reject(error)
-      } else{
-
-        resolve(photos);
-      }
-    })
-  });
-}
-*/
- let fetchAllAnswersAndPhotos = function(questionId){
-  return new Promise((resolve, reject) => {
-
-    AnswerPhotosAggregate.find({question_id:questionId}, (err, answersAndPhotos) => {
+    AnswerPhotosAggregate.find({question_id:questionId}, /*{id: 1, body: 1, date: 1, answerer_name: 1, helpfulness: 1, photos: 1},*/(err, answersAndPhotos) => {
       if(err) {
         reject(err)
       }else {
+       var answers = [];
+        //console.log("improved answer fetch");
+       for(var i=0; i<answersAndPhotos.length; i++) {
+        var answerObj = {};
+        answerObj.id = answersAndPhotos[i].id;
+        answerObj.answer_id = answersAndPhotos[i].id;
+        //answerObj.question_id = answersAndPhotos[i].question_id;
+        answerObj.body = answersAndPhotos[i].body;
+        answerObj.answerer_name = answersAndPhotos[i].answerer_name;
+       // answerObj.answerer_email = answersAndPhotos[i].answerer_email;
+        //answerObj.reported = answersAndPhotos[i].reported;
+        answerObj.helpfulness =  answersAndPhotos[i].helpfulness;
+        answerObj.date = answersAndPhotos[i].date;
+        answerObj.photos = [];
+       // answerObj.urls = [];
+       if(endPoint === 'answers') {
+        for(var photo of answersAndPhotos[i].photos) {
+          var newPhoto = {};
+          newPhoto.id = photo.id;
+          newPhoto.url = photo.url;
+          answerObj.photos.push(newPhoto);
+          //answerObj.urls.push(photo.url);
+        }
+       }else {
+        for(var photo of answersAndPhotos[i].photos) {
 
-       resolve(answersAndPhotos);
+          answerObj.photos.push(photo.url);
+          //answerObj.urls.push(photo.url);
+        }
+       }
+
+        answers.push(answerObj);
+       }
+       resolve(answers);
+
       }
     })
   });
 
  }
-
-let questionsForProduct = function(productId) {
-  //console.log("inside questions for product");
+let newQuestionsForProduct = function(productId) {
+  return new Promise((resolve, reject) => {
+    var questionsArray = [];
+    //resultObj.product_id = productId;
+    //resultObj.results = [];
+    if(productId === undefined) {
+      reject('No product Id passed');
+    }
+    Question.find({product_id:productId}, (err,questions) => {
+      //console.log(productId);
+      if(err) {
+        reject(err)
+      }else {
+        for(var i=0; i < questions.length; i++) {
+          var questionObj = {};
+          questionObj.question_id = questions[i].question_id;
+          questionObj.asker_name = questions[i].asker_name;
+          //questionObj.asker_email = questions[i].asker_email;
+          questionObj.reported = questions[i].reported;
+          questionObj.question_date = questions[i].question_date;
+          questionObj.question_helpfulness = questions[i].question_helpfulness;
+          questionObj.question_body =  questions[i].question_body;
+          questionObj.answers = {};
+          questionsArray.push(questionObj);
+        }
+        resolve(questionsArray);
+      }
+    });
+  });
+}
+/*let questionsForProduct = function(productId) {
+ //console.log("inside questions for product");
   return new Promise((resolve, reject) => {
     var resultObj = {};
     resultObj.product_id = productId;
     resultObj.results = [];
+    if(productId === undefined) {
+      reject('No product Id passed');
+    }
     Question.find({product_id:productId}, (err,questions) => {
       if(err) {
         reject(err)
@@ -137,25 +108,33 @@ let questionsForProduct = function(productId) {
         .then((answersWithPhotos) => {
           //console.log(answersWithPhotos);
 
+
            for(var i=0; i < questions.length; i++) {
 
              var questionObj = {};
              questionObj.question_id = questions[i].question_id;
              questionObj.asker_name = questions[i].asker_name;
-             questionObj.asker_email = questions[i].asker_email;
+             //questionObj.asker_email = questions[i].asker_email;
              questionObj.reported = questions[i].reported;
              questionObj.question_date = questions[i].question_date;
-             questionObj.helpfulness = questions[i].question_helpfulness;
+             questionObj.question_helpfulness = questions[i].question_helpfulness;
              questionObj.question_body =  questions[i].question_body;
 
              var answers = answersWithPhotos[i].slice(0);
 
              questionObj.answers = {};
              for(var j=0; j<answers.length; j++) {
+               var photos = answers[j].photos.slice(0);
+               var newPhotos = [];
+               for(var photo of photos){
+                newPhotos.push(photo.url)
+               }
+               answers[j].photos = newPhotos.slice(0);
                let property = answers[j].id;
                questionObj.answers[property] = answers[j];
 
              }
+
              //console.log(questionObj);
              resultObj.results.push(questionObj);
 
@@ -172,7 +151,7 @@ let questionsForProduct = function(productId) {
   });
 
 });
-}
+}*/
 /*fetchAllAnswersForQuestion(34)
 .then((data) => {
   console.log(data)
@@ -194,8 +173,11 @@ let questionsForProduct = function(productId) {
 .catch((error) => {
    console.log(error)
 })*/
+
+
 module.exports ={
 
   fetchAllAnswersAndPhotos:fetchAllAnswersAndPhotos,
-  questionsForProduct:questionsForProduct
+  //questionsForProduct:questionsForProduct,
+  newQuestionsForProduct:newQuestionsForProduct
 }

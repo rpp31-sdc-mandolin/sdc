@@ -3,7 +3,7 @@
 const csv = require('csv-parser')
 const fs = require('fs')
 const mongoose = require('mongoose');
-const {Answer}= require("./questionAnswer.js");
+const {Answer}= require("../db.js");
 var parser = csv({columns: true}, function (err, records) {
 	console.log(records);
 });
