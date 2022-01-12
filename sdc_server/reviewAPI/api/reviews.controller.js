@@ -40,8 +40,12 @@ module.exports = {
     }
     const newReviewId = await ReviewModel.getLastInsertedDoc() + 1;
     part1.review_id = newReviewId;
-    review.photos.forEach(url => part1.photos.push({'url': url}) )
 
+    if (review.photos.length > 0) {
+      review.photos.forEach(url => part1.photos.push({ 'url': url }))
+    }
+
+    console.log(part1)
     const part2 = {
       _id: newReviewId,
       characteristics: [],
@@ -53,9 +57,9 @@ module.exports = {
       const found = await MetaModel.getCharsName(Number(key))
       part2.characteristics.push({'id': Number(key), 'name': found, 'value': Number(review.characteristics[key])})
     }
-
+    console.log(part2)
     try {
-      const result = await ReviewModel.createReview(part1, part2)
+      // const result = await ReviewModel.createReview(part1, part2)
       res.status(201).json({'success': result})
     } catch (e) {
       res.status(500).json({'error': e.message })
