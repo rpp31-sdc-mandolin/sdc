@@ -108,7 +108,7 @@ async function createDatabase(client, number) {
   // console.log(stats)
   await test.forEach(test => {
     console.log(`${test.id}`)
-    client.db("sdc_test").collection("document_test2").insertOne(test);
+    client.db("sdc_test").collection("document_test").insertOne(test);
   })
 
 }
