@@ -2,7 +2,7 @@ const { MongoClient } = require('mongodb');
 
 async function main() {
   // const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
-  const client = new MongoClient('mongodb://172.31.31.124:27017/sdc_test')
+  const client = new MongoClient('mongodb://54.227.5.15:27017/sdc_test')
 
   try {
     await client.connect();
