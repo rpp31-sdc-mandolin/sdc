@@ -8,7 +8,7 @@ async function main() {
     await client.connect();
     // await createDatabase(client, 2)
     // await listDatabases(client);
-    for (var i = 1; i < 2; i++) {
+    for (var i = 1; i < 1000012; i++) {
       await createDatabase(client, i);
     }
 
