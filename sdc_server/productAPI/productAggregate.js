@@ -1,7 +1,8 @@
 const { MongoClient } = require('mongodb');
 
 async function main() {
-  const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
+  // const client = new MongoClient('mongodb://127.0.0.1:27017/sdc_test')
+  const client = new MongoClient('mongodb://172.31.31.124:27017/sdc_test')
 
   try {
     await client.connect();
@@ -101,7 +102,7 @@ async function createDatabase(client, number) {
     }}
   ]
 
-  const test = client.db("sdc_test").collection("products_test").aggregate(pipeline)
+  const test = client.db("sdc_test").collection("products").aggregate(pipeline)
 
   // var stats = await test.explain('executionStats')
   // console.log(stats)
