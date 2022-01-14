@@ -112,7 +112,7 @@ async function aggGetProductStyle (target) {
   // var stats = await cursor.explain('executionStats')
 
   for await (const doc of cursor) {
-    return doc
+    return finalResult(doc)
   }
 }
 
@@ -150,7 +150,7 @@ const finalResult = (product) => {
 
   return ({
     'product_id': product.id.toString(),
-    'results': finalResult(doc)
+    'results': result
   })
 }
 
