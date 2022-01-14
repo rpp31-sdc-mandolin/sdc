@@ -111,9 +111,14 @@ async function aggGetProductStyle (target) {
   const cursor = await product.find({id: target})
   // var stats = await cursor.explain('executionStats')
 
-  for await (const doc of cursor) {
-    return finalResult(doc)
-  }
+  // for await (const doc of cursor) {
+  //   console.log('styles doc', doc)
+  //   return doc
+  // }
+  const search = await cursor.toArray()
+  const result = search[0]
+
+  return result;
 }
 
 const filterSkus = (array, target) => {
@@ -137,6 +142,7 @@ const filterSalePrice = (string) => {
 const finalResult = (product) => {
   var result = [];
   for (var i = 0; i < product.styles.length; i++) {
+    console.log('product styles at i', product.styles[i])
     result.push({
       'style_id': product.styles[i].id,
       'name': product.styles[i].name,
