@@ -73,6 +73,7 @@ async function aggGetProduct (target) {
   const cursor = await product.find({id: target})
   // var stats = await cursor.explain('executionStats')
   // console.log('getProduct stats', stats)
+  const doc = await cursor.toArray()
   const filterFeatures = (array) => {
     for ( let i = 0; i < array.length; i++ ) {
       if (array[i].value === 'null') {
@@ -81,17 +82,28 @@ async function aggGetProduct (target) {
     }
     return array
   }
-  for await (const doc of cursor) {
-    return ({
-    'id': doc.id,
-    'name': doc.name,
-    'slogan': doc.slogan,
-    'description': doc.description,
-    'category': doc.category,
-    'default_price': doc.default_price.toString(),
-    'features': filterFeatures(doc.features)
+  // for await (const doc of cursor) {
+  //   return ({
+  //   'id': doc.id,
+  //   'name': doc.name,
+  //   'slogan': doc.slogan,
+  //   'description': doc.description,
+  //   'category': doc.category,
+  //   'default_price': doc.default_price.toString(),
+  //   'features': filterFeatures(doc.features)
+  //   })
+  // }
+
+  return ({
+    'id': doc[0].id,
+    'name': doc[0].name,
+    'slogan': doc[0].slogan,
+    'description': doc[0].description,
+    'category': doc[0].category,
+    'default_price': doc[0].default_price.toString(),
+    'features': filterFeatures(doc[0].features)
     })
-  }
+
 }
 
 async function aggGetProductStyle (target) {
