@@ -37,6 +37,9 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 // }). catch ( err => {
 //   console.log(err)
 // })
+app.get('/loaderio-7697d68ba0628325cd70a1a385052cf5', function (req, res) {
+  res.send('loaderio-7697d68ba0628325cd70a1a385052cf5')
+})
 
 app.get('/products', controllers.products.getAllProducts);
 app.get('/products/:product_id', controllers.products.getProductByID);
