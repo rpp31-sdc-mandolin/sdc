@@ -3,6 +3,8 @@ import { sleep, check } from 'k6';
 
 // export const options = {
 //   stages: [
+//     { duration: '25s', target: 1 }, // base lline
+//     { duration: '60s', target: 1 },
 //     { duration: '25s', target: 10 }, // below normal load
 //     { duration: '60s', target: 10 },
 //     { duration: '25s', target: 100 }, // normal load

@@ -15,7 +15,7 @@ export default function () {
   const url = 'http://localhost:3000/reviews?product_id=885686';
   let payload = {
     product_id: 885686,
-    name: 'tes2323t',
+    name: 'posttest',
     email: 'happyShopper@mail.com',
     recommend: true,
     summary: 'best purchase',
@@ -24,6 +24,6 @@ export default function () {
     photos: ['this is test url://hot'],
     characteristics: { '3299897': 2, '3299898': 3, '3299899': 1, '3299900': 4 }
   }
-  http.post(url, payload)
-  sleep(3)
+  http.post(url, payload, { headers: { 'Content-Type': 'x-www-form-urlencoded' } })
+  sleep(2)
 };
