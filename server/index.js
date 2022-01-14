@@ -1,6 +1,6 @@
 const newrelic = require('newrelic');
 const { MongoClient } = require('mongodb');
-// const dotenv = require('dotenv');
+const dotenv = require('dotenv');
 const db = require('../sdc_server/productAPI/product.js')
 const initializeDatabases = require('../sdc_server/productAPI/dbIndex.js');
 const routes = require('./sdc_routes.js');
