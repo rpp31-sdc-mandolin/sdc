@@ -9,7 +9,7 @@ const db = require('../sdc_server/productAPI/product.js')
 //   throw result.error
 // }
 
-console.log(result.parsed);
+// console.log(result.parsed);
 const port = 3000;
 const path = require('path');
 const compression = require('compression');
