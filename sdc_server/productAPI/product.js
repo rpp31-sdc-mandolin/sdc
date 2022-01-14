@@ -150,7 +150,7 @@ const finalResult = (product) => {
 
   return ({
     'product_id': product.id.toString(),
-    'results': result
+    'results': finalResult(doc)
   })
 }
 
