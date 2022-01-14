@@ -1,13 +1,13 @@
 const newrelic = require('newrelic');
 const { MongoClient } = require('mongodb');
-const dotenv = require('dotenv');
+// const dotenv = require('dotenv');
 const db = require('../sdc_server/productAPI/product.js')
 // const initializeDatabases = require('../sdc_server/productAPI/dbIndex.js');
 // const routes = require('./sdc_routes.js');
-const result = dotenv.config();
-if (result.error) {
-  throw result.error
-}
+// const result = dotenv.config();
+// if (result.error) {
+//   throw result.error
+// }
 
 console.log(result.parsed);
 const port = 3000;
