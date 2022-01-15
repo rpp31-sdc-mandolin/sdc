@@ -73,8 +73,8 @@ app.post('/cart', controllers.cart.postProductToCart);
 
 app.post('/interactions', controllers.interactions.postInteraction);
 
-// MongoClient.connect('mongodb://54.227.5.15:27017/sdc_test', {
-  MongoClient.connect('mongodb://172.31.31.124:27017/sdc_test', {
+MongoClient.connect('mongodb://54.227.5.15:27017/sdc_test', {
+  // MongoClient.connect('mongodb://172.31.31.124:27017/sdc_test', {
   useUnifiedTopology: true,
 })
 .catch(err => {
