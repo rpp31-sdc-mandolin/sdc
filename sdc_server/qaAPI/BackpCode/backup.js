@@ -94,3 +94,44 @@ let fetchPhotosForAnswer = function(answerId){
   });
 }
 */
+
+
+/* answersAndPhotos.forEach((answer) => {
+        var answerObj = {};
+          answerObj.answer_id = answer.id;
+          answerObj.body = answer.body;
+          answerObj.answerer_name = answer.answerer_name;
+          answerObj.helpfulness = answer.helpfulness;
+          answerObj.date = answer.date;
+          answerObj.photos = [];
+          answer.photos.forEach((photo) => {
+            var photoObj = {};
+            photoObj.id = photo.id;
+            photoObj.url = photo.url;
+            answerObj.photos.push(photoObj);
+          });
+
+
+          resultObj.results.push( answerObj);
+          //answer.answer_id = answer.id;
+          //resultObj.results.push(answer);
+       });*/
+       //console.log("now giving back without modification")
+
+
+       /*app.get('/qa/questions/', (req,res)=>{
+
+  var product_id = req.query.product_id;
+  //console.log("at endpoint", product_id);
+  questionsForProduct(product_id)
+  .then((data) => {
+
+    res.statusCode = 200;
+    res.send((data));
+  })
+  .catch((error) => {
+    res.statusCode = 404;
+    res.send(error);
+  })
+
+});*/

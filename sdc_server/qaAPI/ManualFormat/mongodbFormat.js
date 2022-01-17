@@ -14,3 +14,8 @@ db.Question.updateMany({}, { $rename: { "date_written": "question_date" } })
 db.Question.updateMany({}, { $rename: { "helpful":"question_helpfulness"}})
 
 db.Question.updateMany({}, { $rename: { "body":"question_body"}})
+
+db.Answer.aggregate( [
+ {$lookup : {from:"AnswersPhotos",localField:"id", foreignField:"answer_id", as:"photos"}},
+ {$out:"AnswerPhotosAggregate"}
+ ]).pretty()

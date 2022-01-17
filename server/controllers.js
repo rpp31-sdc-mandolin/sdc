@@ -225,7 +225,7 @@ module.exports = {
       let productID = req.query.product_id;
       qanda.getQuestions(productID, (err, data) => {
         if (err) {
-          res.status(404).send();
+          res.status(500).send(err);
           return;
         }
 

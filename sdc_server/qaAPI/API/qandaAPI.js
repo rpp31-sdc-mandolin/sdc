@@ -6,6 +6,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const compression = require('compression');
 
+const redisClient = require('redis').createClient;
+const redis = redisClient(6379, 'localhost');
 
 const {questionsForProduct} = require('../Controllers/fetch.js');
 const {fetchAllAnswersAndPhotos} = require('../Controllers/fetch.js');
@@ -23,104 +25,73 @@ app.use(compression());
 app.use(express.json());
 
 
-/*app.get('/qa/questions/', (req,res)=>{
 
-  var product_id = req.query.product_id;
-  //console.log("at endpoint", product_id);
-  questionsForProduct(product_id)
-  .then((data) => {
-
-    res.statusCode = 200;
-    res.send((data));
-  })
-  .catch((error) => {
-    res.statusCode = 404;
-    res.send(error);
-  })
-
-});*/
+redis.on("connect", () => {
+  console.log("connected to redis");
+})
 app.get('/qa/questions/', (req,res)=>{
   console.time('fetchQuestions');
   var product_id = req.query.product_id;
   var resultObj = {};
   resultObj.product_id = product_id;
   resultObj.results = [];
-  newQuestionsForProduct(product_id)
-  .then((questions) => {
-    var fetchAnswersArray = [];
 
-    for(var i=0; i<questions.length; i++) {
-
-        fetchAnswersArray.push(fetchAllAnswersAndPhotos(questions[i].question_id,"questions"))
-    }
-    Promise.all(fetchAnswersArray)
-    .then((answersWithPhotos) => {
-      for(var i=0; i<questions.length; i++) {
-        /*var newAnswers = answersWithPhotos[i].map((answer) => {
-          var newPhotos = answer.photos.map((photo) => {
-
-            return photo.url;
-          })
-          //console.log(newPhotos);
-          answer.photos = newPhotos.slice(0);
-          answer.answer_id = answer.id;
-          return answer;
-        });*/
-        var newAnswers = answersWithPhotos[i].slice(0);
-        for(var j=0; j< newAnswers.length; j++){
-          questions[i].answers[newAnswers[j].id] = newAnswers[j];
-        }
-
-        resultObj.results.push(questions[i]);
-      }
-
+  /*redis.get(product_id, (err, reply) =>{
+    if(reply) {
       res.statusCode = 200;
-      res.send((resultObj));
-      console.timeEnd('fetchQuestions');
-    })
-    .catch((error) => {
-      res.statusCode = 404;
-      res.send(error);
-    })
+      res.send((JSON.parse(reply)));
+    } else  if(err && !reply){
+      console.log('error', err)*/
+      newQuestionsForProduct(product_id)
+      .then((questions) => {
+        var fetchAnswersArray = [];
 
-  })
-  .catch((error) => {
-    res.statusCode = 404;
-    res.send(error);
-  })
+        for(var i=0; i<questions.length; i++) {
+
+            fetchAnswersArray.push(fetchAllAnswersAndPhotos(questions[i].question_id,"questions"))
+        }
+        Promise.all(fetchAnswersArray)
+        .then((answersWithPhotos) => {
+          for(var i=0; i<questions.length; i++) {
+            var newAnswers = answersWithPhotos[i].slice(0);
+            for(var j=0; j< newAnswers.length; j++){
+              questions[i].answers[newAnswers[j].id] = newAnswers[j];
+            }
+            resultObj.results.push(questions[i]);
+          }
+          //redis.set(product_id, JSON.stringify(resultObj), () => {
+            res.statusCode = 200;
+            res.send((resultObj));
+            console.timeEnd('fetchQuestions');
+          //})
+
+        })
+        .catch((error) => {
+          res.statusCode = 404;
+          res.send(error);
+        })
+
+      })
+      .catch((error) => {
+        res.statusCode = 404;
+        res.send(error);
+      })
+   // }
+  //})
+  console.timeEnd('fetchQuestions');
+
 });
 app.get('/qa/questions/:question_id/answers', (req,res) => {
   console.time('fetchAnswers');
-  //console.log('req reached');
+
   var question_id = req.params.question_id;
-  //console.log("Question Id from request obj:", req.params.question_id);
+
   var resultObj = {};
   resultObj.question = question_id;
   fetchAllAnswersAndPhotos(question_id,'answers')
   .then((answersAndPhotos) => {
     resultObj.results = [];
-     /* answersAndPhotos.forEach((answer) => {
-        var answerObj = {};
-          answerObj.answer_id = answer.id;
-          answerObj.body = answer.body;
-          answerObj.answerer_name = answer.answerer_name;
-          answerObj.helpfulness = answer.helpfulness;
-          answerObj.date = answer.date;
-          answerObj.photos = [];
-          answer.photos.forEach((photo) => {
-            var photoObj = {};
-            photoObj.id = photo.id;
-            photoObj.url = photo.url;
-            answerObj.photos.push(photoObj);
-          });
-
-
-          resultObj.results.push( answerObj);
-          //answer.answer_id = answer.id;
-          //resultObj.results.push(answer);
-       });*/
-       //console.log("now giving back without modification")
-       resultObj.results = answersAndPhotos.slice(0);
+     resultObj.results = answersAndPhotos.slice(0);
       //console.log(resultObj);
     res.statusCode = 200;
     res.send(resultObj);
@@ -142,11 +113,9 @@ app.post('/qa/questions/', (req,res) => {
   questionInsert(questionData, (err,data) => {
     if(err){
       console.log('err:',err);
-      //res.statusCode(500);
       res.status(500).send(err)
     } else {
       console.log('err:',err);
-     //res.statusCode(201);
       res.status(201).send('CREATED')
     }
   })
@@ -172,10 +141,10 @@ app.put('/qa/questions/:question_id/report', (req, res) => {
   update.updateQuestionReport(questionId, (err,data) => {
     if(err) {
       res.status(404).send(err);
-      //res.send(err)
+
     } else {
       res.status(204).send();
-      //res.send();
+
     }
   })
 });
@@ -204,15 +173,15 @@ app.put('/qa/answers/:answer_id/helpful', (req, res) => {
 });
 app.put('/qa/questions/:question_id/helpful', (req, res) => {
   var questionId = req.params.question_id;
-  console.log("REACHED HERE");
-  console.log('questionId', questionId);
+  //console.log("REACHED HERE");
+  //console.log('questionId', questionId);
   update.updateQuestionHelpful(questionId, (err,data) => {
     if(err) {
       res.status(404).send(err);
-      //res.send(err)
+
     } else {
       res.status(204).send();
-      //res.send();
+
     }
   })
 });
