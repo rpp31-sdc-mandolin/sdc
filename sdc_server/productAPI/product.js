@@ -17,12 +17,13 @@ async function connectToDB(client) {
 
 async function connectToRedis() {
   if (redisClient) {
-    return;
+    return
   }
+
   try {
     redisClient = createClient();
-    redisClient.on('error', (err) => console.log('Redis Client Error', err));
     await redisClient.connect();
+    redisClient.on('error', (err) => console.log('Redis Client Error', err));
   }
   catch (err) {
     console.log(err)
@@ -50,7 +51,6 @@ async function getProduct(target, callback) {
         throw err;
       }
       if (cache) {
-        cache = JSON.parse(cache)
         const result = {
           'id': cache[0].id,
           'name': cache[0].name,
@@ -63,7 +63,7 @@ async function getProduct(target, callback) {
         callback(null, result);
       } else {
         const result = await aggGetProduct(target);
-        redisClient.set(target, JSON.stringify(result));
+        redisClient.set(target, result);
         const finalResult = {
           'id': result[0].id,
           'name': result[0].name,
@@ -91,11 +91,10 @@ async function getProductStyle(target, callback) {
         throw err;
       }
       if (cache) {
-        cache = JSON.parse(cache)
         callback(null, finalResult(cache));
       } else {
         const result = await aggGetProductStyle(target);
-        redisClient.set(target, JSON.stringify(result));
+        redisClient.set(target, result);
         callback(null, finalResult(result))
       }
     })
