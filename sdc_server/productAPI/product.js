@@ -1,9 +1,13 @@
 const { MongoClient } = require('mongodb');
 const redis = require('redis');
+const redisClient = redis.createClient({
+  url: 'redis://127.0.0.1:6379'
+});
+redisClient.connect();
 
 
 let product;
-let redisClient;
+
 
 async function connectToDB(client) {
   if (product) {
@@ -16,23 +20,23 @@ async function connectToDB(client) {
   }
 }
 
-async function connectToRedis() {
-  if (redisClient) {
-    return
-  }
+// async function connectToRedis() {
+//   if (redisClient) {
+//     return
+//   }
 
-  try {
-    redisClient = redis.createClient({
-      url: 'redis://127.0.0.1:6379'
-    });
-    await redisClient.connect();
-    redisClient.on('error', (err) => console.log('Redis Client Error', err));
-  }
-  catch (err) {
-    console.log(err)
-  }
+//   try {
+//     redisClient = redis.createClient({
+//       url: 'redis://127.0.0.1:6379'
+//     });
+//     await redisClient.connect();
+//     redisClient.on('error', (err) => console.log('Redis Client Error', err));
+//   }
+//   catch (err) {
+//     console.log(err)
+//   }
 
-}
+// }
 
 async function getAllProducts(callback) {
 
@@ -214,7 +218,7 @@ const finalResult = (product) => {
 
 module.exports = {
   connectToDB: connectToDB,
-  connectToRedis: connectToRedis,
+  // connectToRedis: connectToRedis,
   getAllProducts: getAllProducts,
   getProduct: getProduct,
   getProductStyle: getProductStyle
