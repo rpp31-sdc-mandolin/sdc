@@ -1,8 +1,9 @@
 const { MongoClient } = require('mongodb');
-const { createClient } = require('redis');
+const redis = require('redis');
+
 
 let product;
-// let redisClient;
+let redisClient;
 
 async function connectToDB(client) {
   if (product) {
@@ -15,23 +16,23 @@ async function connectToDB(client) {
   }
 }
 
-// async function connectToRedis() {
-//   if (redisClient) {
-//     return
-//   }
+async function connectToRedis() {
+  if (redisClient) {
+    return
+  }
 
-//   try {
-//     redisClient = createClient({
-//       url: 'redis-19643.c14.us-east-1-3.ec2.cloud.redislabs.com:19643'
-//     });
-//     await redisClient.connect();
-//     redisClient.on('error', (err) => console.log('Redis Client Error', err));
-//   }
-//   catch (err) {
-//     console.log(err)
-//   }
+  try {
+    redisClient = redis.createClient({
+      url: 'redis://127.0.0.1:6379'
+    });
+    await redisClient.connect();
+    redisClient.on('error', (err) => console.log('Redis Client Error', err));
+  }
+  catch (err) {
+    console.log(err)
+  }
 
-// }
+}
 
 async function getAllProducts(callback) {
 
@@ -48,38 +49,39 @@ async function getProduct(target, callback) {
   target = Number(target)
 
   try {
-    // redisClient.get(target, async (err, cache) => {
-    //   if (err) {
-    //     throw err;
-    //   }
-    //   if (cache) {
-    //     const result = {
-    //       'id': cache[0].id,
-    //       'name': cache[0].name,
-    //       'slogan': cache[0].slogan,
-    //       'description': cache[0].description,
-    //       'category': cache[0].category,
-    //       'default_price': cache[0].default_price.toString(),
-    //       'features': filterFeatures(cache[0].features)
-    //       }
-    //     callback(null, result);
-    //   } else {
-    //     const result = await aggGetProduct(target);
-    //     redisClient.set(target, result);
-    //     const finalResult = {
-    //       'id': result[0].id,
-    //       'name': result[0].name,
-    //       'slogan': result[0].slogan,
-    //       'description': result[0].description,
-    //       'category': result[0].category,
-    //       'default_price': result[0].default_price.toString(),
-    //       'features': filterFeatures(result[0].features)
-    //     }
-    //     callback(null, finalResult)
-    //   }
-    // })
-    const result = await aggGetProduct(target);
-    callback(null, result)
+    redisClient.get(target, async (err, cache) => {
+      if (err) {
+        throw err;
+      }
+      if (cache) {
+        cache = JSON.parse(cache);
+        const result = {
+          'id': cache[0].id,
+          'name': cache[0].name,
+          'slogan': cache[0].slogan,
+          'description': cache[0].description,
+          'category': cache[0].category,
+          'default_price': cache[0].default_price.toString(),
+          'features': filterFeatures(cache[0].features)
+          }
+        callback(null, result);
+      } else {
+        const result = await aggGetProduct(target);
+        redisClient.set(target, JSON.stringify(result));
+        const finalResult = {
+          'id': result[0].id,
+          'name': result[0].name,
+          'slogan': result[0].slogan,
+          'description': result[0].description,
+          'category': result[0].category,
+          'default_price': result[0].default_price.toString(),
+          'features': filterFeatures(result[0].features)
+        }
+        callback(null, finalResult)
+      }
+    })
+    // const result = await aggGetProduct(target);
+    // callback(null, result)
   } catch (err) {
     callback(err, null)
   }
@@ -90,21 +92,22 @@ async function getProductStyle(target, callback) {
   target = Number(target)
 
   try {
-    // redisClient.get(target, async (err, cache) => {
-    //   if (err) {
-    //     throw err;
-    //   }
-    //   if (cache) {
-    //     callback(null, finalResult(cache));
-    //   } else {
-    //     const result = await aggGetProductStyle(target);
-    //     redisClient.set(target, result);
-    //     callback(null, finalResult(result))
-    //   }
-    // })
-    const result = await aggGetProductStyle(target);
-    //     redisClient.set(target, result);
+    redisClient.get(target, async (err, cache) => {
+      if (err) {
+        throw err;
+      }
+      if (cache) {
+        cache = JSON.parse(cache)
+        callback(null, finalResult(cache));
+      } else {
+        const result = await aggGetProductStyle(target);
+        redisClient.set(target, JSON.stringify(result));
         callback(null, finalResult(result))
+      }
+    })
+    // const result = await aggGetProductStyle(target);
+    // //     redisClient.set(target, result);
+    //     callback(null, finalResult(result))
   } catch (e) {
     callback(e, null)
   }
@@ -215,7 +218,7 @@ const finalResult = (product) => {
 
 module.exports = {
   connectToDB: connectToDB,
-  // connectToRedis: connectToRedis,
+  connectToRedis: connectToRedis,
   getAllProducts: getAllProducts,
   getProduct: getProduct,
   getProductStyle: getProductStyle
