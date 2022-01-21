@@ -37,7 +37,7 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 // }). catch ( err => {
 //   console.log(err)
 // })
-db.connectToRedis();
+
 app.get('/loaderio-7697d68ba0628325cd70a1a385052cf5', function (req, res) {
   res.send('loaderio-7697d68ba0628325cd70a1a385052cf5')
 })
@@ -83,7 +83,7 @@ MongoClient.connect('mongodb://54.227.5.15:27017/sdc_test', {
 })
 .then(async client => {
   await db.connectToDB(client);
-  // await db.connectToRedis();
+  await db.connectToRedis();
   app.listen(port, () => {
     console.log(`Server is listening on port: ${port}`);
   });
