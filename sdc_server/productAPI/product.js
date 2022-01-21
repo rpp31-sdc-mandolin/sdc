@@ -49,7 +49,8 @@ async function getProduct(target, callback) {
       if (err) {
         throw err;
       }
-      if (cahce) {
+      if (cache) {
+        cache = JSON.parse(cache)
         const result = {
           'id': cache[0].id,
           'name': cache[0].name,
@@ -62,7 +63,7 @@ async function getProduct(target, callback) {
         callback(null, result);
       } else {
         const result = await aggGetProduct(target);
-        redisClient.set(target, result);
+        redisClient.set(target, JSON.stringify(result));
         const finalResult = {
           'id': result[0].id,
           'name': result[0].name,
@@ -85,15 +86,16 @@ async function getProductStyle(target, callback) {
   target = Number(target)
 
   try {
-    redisClient.get(target, async (err, result) => {
+    redisClient.get(target, async (err, cache) => {
       if (err) {
         throw err;
       }
-      if (result) {
-        callback(null, finalResult(result));
+      if (cache) {
+        cache = JSON.parse(cache)
+        callback(null, finalResult(cache));
       } else {
         const result = await aggGetProductStyle(target);
-        redisClient.set(target, result);
+        redisClient.set(target, JSON.stringify(result));
         callback(null, finalResult(result))
       }
     })
