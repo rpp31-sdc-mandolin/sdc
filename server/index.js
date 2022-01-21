@@ -1,4 +1,4 @@
-const newrelic = require('newrelic');
+// const newrelic = require('newrelic');
 const { MongoClient } = require('mongodb');
 const dotenv = require('dotenv');
 const db = require('../sdc_server/productAPI/product.js')
@@ -9,7 +9,7 @@ if (result.error) {
   throw result.error
 }
 
-console.log(result.parsed);
+// console.log(result.parsed);
 const port = 3000;
 const path = require('path');
 const compression = require('compression');
