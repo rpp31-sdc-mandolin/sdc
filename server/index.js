@@ -81,7 +81,8 @@ MongoClient.connect('mongodb://54.227.5.15:27017/sdc_test', {
   console.log(err)
 })
 .then(async client => {
-  await db.connectToDB(client)
+  await db.connectToDB(client);
+  await db.connectToRedis();
   app.listen(port, () => {
     console.log(`Server is listening on port: ${port}`);
   });
