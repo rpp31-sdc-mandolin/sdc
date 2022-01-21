@@ -50,6 +50,7 @@ async function getProduct(target, callback) {
 
   try {
     const cache = await redisClient.get(target)
+    console.log('cache in product id', cache)
     if (cache) {
       cache = JSON.parse(cache);
       const result = {
@@ -74,6 +75,7 @@ async function getProduct(target, callback) {
         'default_price': result[0].default_price.toString(),
         'features': filterFeatures(result[0].features)
       }
+
       callback(null, finalResult)
     }
 
