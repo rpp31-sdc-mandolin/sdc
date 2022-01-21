@@ -215,7 +215,7 @@ const finalResult = (product) => {
 
 module.exports = {
   connectToDB: connectToDB,
-  connectToRedis: connectToRedis,
+  // connectToRedis: connectToRedis,
   getAllProducts: getAllProducts,
   getProduct: getProduct,
   getProductStyle: getProductStyle
