@@ -37,7 +37,7 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 // }). catch ( err => {
 //   console.log(err)
 // })
-db.conenctToRedis();
+db.connectToRedis();
 app.get('/loaderio-7697d68ba0628325cd70a1a385052cf5', function (req, res) {
   res.send('loaderio-7697d68ba0628325cd70a1a385052cf5')
 })
