@@ -21,7 +21,9 @@ async function connectToRedis() {
   }
 
   try {
-    redisClient = createClient();
+    redisClient = createClient({
+      url: 'redis-19643.c14.us-east-1-3.ec2.cloud.redislabs.com:19643'
+    });
     await redisClient.connect();
     redisClient.on('error', (err) => console.log('Redis Client Error', err));
   }
