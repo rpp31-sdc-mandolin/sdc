@@ -135,7 +135,7 @@ async function aggAllProducts (id) {
 }
 
 async function aggGetProduct (target) {
-  const cursor = await product.find({id: target})
+  const cursor = await product.find({id: target}).readPref({ mode: 'nearest'})
   // var stats = await cursor.explain('executionStats')
   // console.log('getProduct stats', stats)
   const doc = await cursor.toArray()
@@ -165,7 +165,7 @@ async function aggGetProduct (target) {
 
 async function aggGetProductStyle (target) {
 
-  const cursor = await product.find({id: target})
+  const cursor = await product.find({id: target}).readPref({ mode: 'nearest'})
   // var stats = await cursor.explain('executionStats')
 
   for await (const doc of cursor) {
