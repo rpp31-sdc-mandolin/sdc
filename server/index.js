@@ -1,4 +1,4 @@
-const newrelic = require('newrelic');
+// const newrelic = require('newrelic');
 const { MongoClient } = require('mongodb');
 const dotenv = require('dotenv');
 const db = require('../sdc_server/productAPI/product.js')
@@ -83,7 +83,7 @@ MongoClient.connect('mongodb://admin:password@172.31.91.225:27017,172.31.86.133:
   console.log(err)
 })
 .then(async client => {
-  console.log('client', client)
+  // console.log('client', client)
   await db.connectToDB(client);
   // await db.connectToRedis();
   app.listen(port, () => {
