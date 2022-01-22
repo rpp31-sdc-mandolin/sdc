@@ -74,7 +74,7 @@ app.post('/cart', controllers.cart.postProductToCart);
 
 app.post('/interactions', controllers.interactions.postInteraction);
 
-MongoClient.connect('mongodb://18.205.107.66:27017,44.201.193.36:27017,3.86.231.204:27017/?replicaSet=sdcRepl', {
+MongoClient.connect('mongodb://18.205.107.66:27017,44.201.193.36:27017,3.86.231.204:27017/sdc_test?replicaSet=sdcRepl', {
   // MongoClient.connect('mongodb://172.31.31.124:27017/sdc_test', {
   useUnifiedTopology: true,
 })
@@ -82,6 +82,7 @@ MongoClient.connect('mongodb://18.205.107.66:27017,44.201.193.36:27017,3.86.231.
   console.log(err)
 })
 .then(async client => {
+  console.log('client', client)
   await db.connectToDB(client);
   // await db.connectToRedis();
   app.listen(port, () => {
