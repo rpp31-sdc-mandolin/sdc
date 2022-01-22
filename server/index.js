@@ -74,7 +74,7 @@ app.post('/cart', controllers.cart.postProductToCart);
 
 app.post('/interactions', controllers.interactions.postInteraction);
 
-MongoClient.connect('mongodb://admin:password@172.31.91.225:27017,172.31.86.133:27017,172.31.90.18:27017/sdc_test?replicaSet=sdcRepl', {
+MongoClient.connect('mongodb://admin:password@172.31.91.225:27017,172.31.86.133:27017,172.31.90.18:27017/sdc_test?replicaSet=sdcRepl&authSource=admin', {
   // MongoClient.connect('mongodb://172.31.31.124:27017/sdc_test', {
   useUnifiedTopology: true,
 })
