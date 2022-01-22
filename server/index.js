@@ -1,4 +1,4 @@
-// const newrelic = require('newrelic');
+const newrelic = require('newrelic');
 const { MongoClient } = require('mongodb');
 const dotenv = require('dotenv');
 const db = require('../sdc_server/productAPI/product.js')
