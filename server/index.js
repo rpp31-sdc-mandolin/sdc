@@ -1,4 +1,4 @@
-require('newrelic');
+// const newrelic = require('newrelic');
 const path = require('path');
 const compression = require('compression');
 const express = require('express');
@@ -16,7 +16,6 @@ const middleware = require('./middle.js');
 const main = require('./../sdc_server/reviewAPI/index.js')
 const reviews = require('./../sdc_server/reviewAPI/api/reviews.route.js');
 main(app).catch(console.err)
-
 
 const axios = require('axios').default;
 const controllers = require('./controllers.js');
@@ -50,6 +49,10 @@ app.put('/qa/answers/:answer_id/report', controllers.questions_answers.reportAns
 app.post('/qa/questions/:question_id/answers', controllers.questions_answers.postAnswer);
 
 app.use('/reviews', reviews)
+// app.post('/reviews', controllers.reviews.postReviews);
+// app.get('/reviews/meta', controllers.reviews.getReviewsMeta);
+// app.put('/reviews/helpful', controllers.reviews.markHelpful);
+// app.put('/reviews/:review_id/report', controllers.reviews.reportReview);
 
 app.get('/cart', controllers.cart.getProductsInCart);
 app.post('/cart', controllers.cart.postProductToCart);

@@ -9,7 +9,7 @@ module.exports = {
       return;
     }
     try {
-      reviews = await client.db('reviewService').collection('reviews');
+      reviews = await client.db('raw-review').collection('reviews');
     } catch(e) {
       console.error(`Unable to establish a collection handle in reviewService: ${e}`)
     }

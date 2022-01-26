@@ -7,8 +7,8 @@ module.exports = {
       return
     }
     try {
-      metadata = await client.db('reviewService').collection('metadata');
-      characteristics = await client.db('reviewService').collection('characteristics')
+      metadata = await client.db('raw-review').collection('metadata');
+      characteristics = await client.db('raw-review').collection('characteristics')
     } catch(e) {
       console.error(`Unable to establish a collection handle in metadata: ${e}`)
     }

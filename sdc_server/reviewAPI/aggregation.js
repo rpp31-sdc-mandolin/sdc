@@ -7,7 +7,11 @@ async function main() {
   try {
     await client.connect();
     console.log('Connected successfully to server');
-    // await deleteDocs(client);
+
+    // for (var i = 1; i <= 5774952; i++) {
+    //   await transformReviewModel(client, i)
+    //   await transformCharacteristicModel(client, i)
+    // }
 
   } catch(error) {
     console.log(error);
@@ -218,14 +222,12 @@ async function transformMetadataModel(client, id) {
   await aggCursor.forEach(doc => console.log(`${doc._id}`));
 }
 
-
-
-async function transformReviewModel(client) {
+async function transformReviewModel(client, id) {
 
   const pipeline = [
     {
-      '$sort': {
-        'id': 1
+      '$match': {
+        'review_id': id
       }
     }, {
       '$lookup': {
@@ -236,11 +238,21 @@ async function transformReviewModel(client) {
         'pipeline': [
           {
             '$project': {
-              'url': 1,
-              '_id': 0
+              '_id': 0,
+              'review_id': 0,
+              'id': 0
             }
           }
         ]
+      }
+    }, {
+      '$addFields': {
+        'reported': {
+          '$toBool': '$reported'
+        },
+        'recommend': {
+          '$toBool': '$recommend'
+        }
       }
     }, {
       '$merge': {
@@ -250,8 +262,8 @@ async function transformReviewModel(client) {
         }
       }
     }
-  ];
+  ]
 
-  const aggCursor = client.db('raw-review').collection('reviews').aggregate(pipeline, { allowDiskUse: true });
-  await aggCursor.forEach(review => console.log(`${review._id}`));
+  const aggCursor = client.db('raw-review').collection('reviews').aggregate(pipeline);
+  await aggCursor.forEach(doc => console.log(`${doc._id}`));
 };

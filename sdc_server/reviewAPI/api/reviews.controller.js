@@ -23,6 +23,7 @@ module.exports = {
   },
   apiPostReview: async (req, res) => {
     const review = req.body;
+    console.log(review)
     const part1 = {
       body: review.body,
       date: new Date(),
@@ -38,28 +39,40 @@ module.exports = {
       reviewer_name: review.name,
       summary: review.summary
     }
-    const newReviewId = await ReviewModel.getLastInsertedDoc() + 1;
-    part1.review_id = newReviewId;
-
-    if (review.photos.length > 0) {
-      review.photos.forEach(url => part1.photos.push({ 'url': url }))
-    }
-
-    console.log(part1)
     const part2 = {
-      _id: newReviewId,
+      _id: 0,
       characteristics: [],
       product_id: Number(review.product_id),
       rating: Number(review.rating),
       recommend: Boolean(review.recommend)
     }
-    for (let key in review.characteristics) {
-      const found = await MetaModel.getCharsName(Number(key))
-      part2.characteristics.push({'id': Number(key), 'name': found, 'value': Number(review.characteristics[key])})
+
+    if (review.photos.length > 0) {
+      review.photos.forEach(url => part1.photos.push({ 'url': url }))
     }
-    console.log(part2)
+
+    let newReviewId;
     try {
-      // const result = await ReviewModel.createReview(part1, part2)
+      // newReviewId = await ReviewModel.getLastInsertedDoc() + 1;
+      newReviewId = Date.now()
+      part1.review_id = newReviewId;
+      part2._id = newReviewId;
+    } catch (e) {
+      console.error(`Coulnd't find last inserted review_id ${e}`)
+    }
+
+    let found;
+    try {
+      for (let key in review.characteristics) {
+        found = await MetaModel.getCharsName(Number(key))
+        part2.characteristics.push({'id': Number(key), 'name': found, 'value': Number(review.characteristics[key])})
+      }
+    } catch (e) {
+      console.error(`Couldn't match the name of characteristic ${e}`)
+    }
+
+    try {
+      const result = await ReviewModel.createReview(part1, part2)
       res.status(201).json({'success': result})
     } catch (e) {
       res.status(500).json({'error': e.message })
