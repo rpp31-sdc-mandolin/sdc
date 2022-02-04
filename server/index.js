@@ -38,7 +38,7 @@ app.get('/products/outfit/details', middleware.setCookies, controllers.products.
 //app.use(middleware.setCookies);
 app.get('/cookies', controllers.cookies.getCookies);
 
-
+//app.get('/qa/questions/:question_id/answers', controllers.questions_answers.getAnswers);
 app.get('/qa/questions/', controllers.questions_answers.getAllQuestions);
 app.post('/qa/questions/', controllers.questions_answers.postQuestion);
 app.put('/qa/questions/:question_id/helpful', controllers.questions_answers.updateQuestionHelpfulness);

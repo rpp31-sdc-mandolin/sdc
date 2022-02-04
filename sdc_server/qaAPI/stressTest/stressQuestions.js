@@ -23,6 +23,7 @@ export const options = {
 };
 
 export default function () {
-  const res =http.get('http://localhost:4000/qa/questions?product_id=59553');
+  let product_id = Math.floor(Math.random() * (999777-900045)+900045)
+  const res =http.get(`http://localhost:4000/qa/questions?${product_id}=59553`);
   check(res, { 'status was 200': (r) => r.status == 200 });
 }

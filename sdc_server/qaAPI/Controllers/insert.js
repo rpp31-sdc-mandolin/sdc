@@ -4,6 +4,8 @@
 const {Question} = require('../Model/db.js');
 
 const {AnswerPhotosAggregate} = require('../Model/db.js');
+//const {createClient} = require('redis');
+//const redisUrl="redis://172.31.30.101:6379";
 
 //to get the next Id to insert data
 const getNextId = (db) => {
@@ -24,7 +26,7 @@ const getNextId = (db) => {
 }
 
 //var timestamp = new Date().getUTCMilliseconds();
-var now = new Date();
+/*var now = new Date();
 
 var timestamp = now.getFullYear().toString(); // 2011
 timestamp += (now.getMonth < 9 ? '0' : '') + now.getMonth().toString(); // JS months are 0-based, so +1 and pad with 0's
@@ -32,11 +34,11 @@ timestamp += ((now.getDate < 10) ? '0' : '') + now.getDate().toString();
 timestamp += ((now.getDate < 10) ? '0' : '') + now.getHours().toString();
 timestamp += ((now.getDate < 10) ? '0' : '') + now.getMinutes().toString();
 timestamp += ((now.getDate < 10) ? '0' : '') + now.getSeconds().toString();
-timestamp += ((now.getDate < 10) ? '0' : '') + now.getMilliseconds().toString();
+timestamp += ((now.getDate < 10) ? '0' : '') + now.getMilliseconds().toString();*/
 
 //timestamp += ((now.getDate < 10) ? '0' : '') + now.getNanoSeconds().toString();
 
-console.log(timestamp);
+//console.log(timestamp);
 
 const getNextRandomId = (db) => {
   return new Promise ((resolve, reject) => {
@@ -82,20 +84,33 @@ const questionInsert = (questionData, callback) => {
       question.question_helpfulness = 0;
       console.log('question:',question);
       let newQ = new Question(question);
-      console.log('newQ:',newQ);
-      newQ.save((err) => {
-        if(err){
-         return err;
 
-        } else {
-          callback(null, "CREATED")
-        }
-      })
-  })
-  .catch((error) => {
-    console.log('error', error);
-    callback(error);
-  })
+      console.log('newQ:',newQ);
+     /*(async () => {
+        //const client = createClient({url:redisUrl});
+        const client = createClient();
+        client.on('error',(err) => console.log('Redis Client err',err));
+        await client.connect();
+        var delKey = questionData.product_id;
+        await client.del(delKey + "");
+
+      })();*/
+        newQ.save((err) => {
+          if(err){
+           return err;
+
+          } else {
+            callback(null, "CREATED")
+          }
+        })
+
+    })
+    .catch((error) => {
+      console.log('error', error);
+      callback(error);
+    })
+
+
 }
 /*const answerInsert = (answerData, question_id, callback) => {
   let id;
@@ -190,6 +205,17 @@ const answerPhotoAggregateInsert = function(answerData, question_id, callback) {
       }
 
       let newAnswer = new AnswerPhotosAggregate(answer);
+      console.log(newAnswer);
+      /*(async () => {
+        //const client = createClient({url:redisUrl});
+        const client = createClient();
+        client.on('error',(err) => console.log('Redis Client err',err));
+        await client.connect();
+        var delKey = question_id+" "+"answers";
+        await client.del(delKey + "");
+        delKey = question_id+" "+"questions";
+        await client.del(delKey + "");
+      })();*/
       newAnswer.save((err) => {
         if(err){
 

@@ -10,7 +10,7 @@ export default function () {
 
     product_id:34
   };*/
-  http.get(url);
+  http.put(url);
 }
 
 

@@ -3,7 +3,13 @@
 const mongoose = require('mongoose');
 
 //const AutoIncrement = require('mongoose-sequence')(mongoose);
-mongoose.connect('mongodb://localhost:27017/qanda9');
+mongoose.connect('mongodb://localhost:27017/qanda9', {
+  minPoolSize: 20,
+  maxPoolSize: 100,
+  socketTimeoutMS: 1000
+});
+
+console.log('Using Options in Mongoose');
 
 //console.log(process.memoryUsage());
 const used = process.memoryUsage();
