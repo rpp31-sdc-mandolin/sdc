@@ -1,10 +1,4 @@
 const { MongoClient } = require('mongodb');
-// const redis = require('redis');
-// const redisClient = redis.createClient({
-//   url: 'redis://127.0.0.1:6379'
-// });
-// redisClient.connect();
-
 
 let product;
 
@@ -20,23 +14,6 @@ async function connectToDB(client) {
   }
 }
 
-// async function connectToRedis() {
-//   if (redisClient) {
-//     return
-//   }
-
-//   try {
-//     redisClient = redis.createClient({
-//       url: 'redis://127.0.0.1:6379'
-//     });
-//     await redisClient.connect();
-//     redisClient.on('error', (err) => console.log('Redis Client Error', err));
-//   }
-//   catch (err) {
-//     console.log(err)
-//   }
-
-// }
 
 async function getAllProducts(callback) {
 
@@ -53,36 +30,6 @@ async function getProduct(target, callback) {
   target = Number(target)
 
   try {
-    // const cache = await redisClient.get(target)
-    // console.log('cache in product id', cache)
-    // if (cache) {
-    //   cache = JSON.parse(cache);
-    //   const result = {
-    //     'id': cache[0].id,
-    //     'name': cache[0].name,
-    //     'slogan': cache[0].slogan,
-    //     'description': cache[0].description,
-    //     'category': cache[0].category,
-    //     'default_price': cache[0].default_price.toString(),
-    //     'features': filterFeatures(cache[0].features)
-    //     }
-    //   callback(null, result);
-    // } else {
-    //   const result = await aggGetProduct(target);
-    //   redisClient.set(target, JSON.stringify(result));
-    //   const finalResult = {
-    //     'id': result[0].id,
-    //     'name': result[0].name,
-    //     'slogan': result[0].slogan,
-    //     'description': result[0].description,
-    //     'category': result[0].category,
-    //     'default_price': result[0].default_price.toString(),
-    //     'features': filterFeatures(result[0].features)
-    //   }
-
-    //   callback(null, finalResult)
-    // }
-
     const result = await aggGetProduct(target);
     callback(null, result)
   } catch (err) {
@@ -95,16 +42,6 @@ async function getProductStyle(target, callback) {
   target = Number(target)
 
   try {
-    // const cache = await redisClient.get(target)
-    // if (cache) {
-    //   cache = JSON.parse(cache)
-    //   callback(null, finalResult(cache));
-    // } else {
-    //   const result = await aggGetProductStyle(target);
-    //   redisClient.set(target, JSON.stringify(result));
-    //   callback(null, finalResult(result))
-    // }
-
     const result = await aggGetProductStyle(target);
     //     redisClient.set(target, result);
     callback(null, finalResult(result))
@@ -115,8 +52,6 @@ async function getProductStyle(target, callback) {
 
 async function aggAllProducts (id) {
   const cursor = await product.find({}).sort({id: 1}).limit(5)
-  // var stats = await cursor.explain('executionStats')
-  // console.log('getAllProducts stats', stats)
   const dbResult = await cursor.toArray()
   const result = [];
 
@@ -136,11 +71,7 @@ async function aggAllProducts (id) {
 
 async function aggGetProduct (target) {
   const cursor = await product.find({id: target})
-  // var stats = await cursor.explain('executionStats')
-  // console.log('getProduct stats', stats)
   const doc = await cursor.toArray()
-  // return doc
-
 
   const filterFeatures = (array) => {
     for ( let i = 0; i < array.length; i++ ) {
@@ -166,15 +97,11 @@ async function aggGetProduct (target) {
 async function aggGetProductStyle (target) {
 
   const cursor = await product.find({id: target})
-  // var stats = await cursor.explain('executionStats')
 
   for await (const doc of cursor) {
     return doc
   }
-  // const search = await cursor.toArray()
-  // const result = search[0]
-
-  // return result;
+ 
 }
 
 const filterSkus = (array, target) => {
@@ -218,7 +145,6 @@ const finalResult = (product) => {
 
 module.exports = {
   connectToDB: connectToDB,
-  // connectToRedis: connectToRedis,
   getAllProducts: getAllProducts,
   getProduct: getProduct,
   getProductStyle: getProductStyle
