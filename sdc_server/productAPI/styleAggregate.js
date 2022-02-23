@@ -5,8 +5,7 @@ async function main() {
 
   try {
     await client.connect();
-    // await createDatabase(client, 2)
-    // await listDatabases(client);
+    
     for (var i = 1; i < 3; i++) {
       await updateDatabase(client, i);
     }
@@ -61,8 +60,6 @@ async function updateDatabase(client, number) {
 
   const test = client.db("sdc_test").collection("document_test").aggregate(pipeline)
 
-  // var stats = await test.explain('executionStats')
-  // console.log(stats)
   await test.forEach(test => {
     console.log(`${test.id}`)
     client.db("sdc_test").collection("document_test2").insertOne(test);
