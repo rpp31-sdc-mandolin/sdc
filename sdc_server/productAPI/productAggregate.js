@@ -25,43 +25,6 @@ main();
 
 async function createDatabase(client, number) {
 
-  // const pipeline = [
-  //   { '$match': {
-  //     'id': number
-  //   } },
-  //   {'$addFields': {
-  //     // 'style_id': '$styles.id',
-  //     'product_id': '$id'
-  //     }
-  //   },
-  //   {'$lookup': {
-  //     'from': 'features',
-  //     'localField': 'id',
-  //     'foreignField': 'product_id',
-  //     'as': 'features'
-  //   }},
-  //   {'$lookup': {
-  //     'from': 'styles',
-  //     'localField': 'id',
-  //     'foreignField': 'productId',
-  //     'as': 'results',
-  //     'pipeline': [
-  //       {'$lookup': {
-  //         'from': 'photos',
-  //         'localField': 'id',
-  //         'foreignField': 'styleId',
-  //         'as': 'photos'
-  //       }},
-  //       {'$lookup': {
-  //         'from': 'skus',
-  //         'localField': 'id',
-  //         'foreignField': 'styleId',
-  //         'as': 'skus'
-  //       }}
-  //     ]
-  //   }}
-  // ]
-
   const pipeline = [
     // find the product that matches the given id number
     { '$match': {
@@ -104,8 +67,6 @@ async function createDatabase(client, number) {
 
   const test = client.db("sdc_test").collection("products").aggregate(pipeline)
 
-  // var stats = await test.explain('executionStats')
-  // console.log(stats)
   await test.forEach(test => {
     console.log(`${test.id}`)
     client.db("sdc_test").collection("document_test").insertOne(test);
